@@ -15,7 +15,7 @@ export default function AdminLogin() {
       <input name="email" type="email" placeholder="Email" required className={inp} />
       <input name="password" type="password" placeholder="Password" required className={inp} />
       {err && <p className="mb-2 text-sm text-red-600">{err}</p>}
-      <button disabled={pending} className="w-full rounded-lg bg-violet-600 py-2 font-bold text-white disabled:opacity-50">
+      <button disabled={pending} className="w-full rounded-lg bg-black py-2 font-bold text-white disabled:opacity-50">
         {pending ? "Masuk..." : "Masuk"}
       </button>
     </form>

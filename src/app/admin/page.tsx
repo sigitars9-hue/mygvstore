@@ -45,7 +45,7 @@ export default async function Admin() {
                   <td className="p-3">{rp(o.total_pay)}</td>
                   <td className="p-3"><span className={`rounded-full px-2 py-0.5 text-xs ${cls}`}>{label}</span></td>
                   <td className="p-3">{expired ? "Dibatalkan" : `${STAGES[o.stage]} (${o.progress}%)`}</td>
-                  <td className="p-3"><Link href={`/admin/${o.code}`} className="font-bold text-violet-600">Kelola</Link></td>
+                  <td className="p-3"><Link href={`/admin/${o.code}`} className="font-bold text-pink-600">Kelola</Link></td>
                 </tr>
               );
             })}

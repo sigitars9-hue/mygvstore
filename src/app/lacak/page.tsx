@@ -15,7 +15,7 @@ export default async function Lacak({ searchParams }: { searchParams: Promise<{ 
     <div className="mx-auto max-w-xl">
       <form action="/lacak" className="mb-4 flex gap-2 rounded-xl border bg-white p-4">
         <input name="kode" defaultValue={kode} placeholder="Kode pesanan, mis. JK-1001" className="flex-1 rounded-lg border p-2" />
-        <button className="rounded-lg bg-violet-600 px-4 font-bold text-white">Cek</button>
+        <button className="rounded-lg bg-black px-4 font-bold text-white">Cek</button>
       </form>
       {kode && !t && <p className="text-gray-500">Kode tidak ditemukan.</p>}
       {t && (

@@ -3,6 +3,7 @@ import { useState, useTransition } from "react";
 import { uploadProof } from "@/app/actions/order";
 import { rp, type Track } from "@/lib/utils";
 import { PAY } from "@/lib/pay-config";
+import { Icon } from "@/components/Icons";
 
 export default function PayBox({ t }: { t: Track }) {
   const [msg, setMsg] = useState("");
@@ -25,21 +26,29 @@ export default function PayBox({ t }: { t: Track }) {
   return (
     <div className="mb-4 rounded-xl bg-gray-50 p-4">
       <b>Instruksi pembayaran</b>
-      <div className="my-1 text-2xl font-extrabold text-violet-600">{rp(t.total_pay)}</div>
+      <div className="my-1 text-2xl font-extrabold text-pink-600">{rp(t.total_pay)}</div>
       <p className="text-sm text-gray-500">
         Transfer tepat sesuai nominal (3 digit terakhir adalah kode unik). Bayar sebelum {new Date(t.deadline).toLocaleString("id-ID")}.
       </p>
-      <p className="my-2 text-sm">🏦 {PAY.bank}<br />📱 {PAY.ewallet}<br />🔳 QRIS tersedia lewat WhatsApp</p>
-      {t.pay_status === "proof" && <p className="text-sm text-amber-600">⏳ Bukti sudah diterima, menunggu verifikasi admin.</p>}
+      <ul className="my-2 space-y-1 text-sm">
+  <li className="flex items-center gap-2"><Icon name="bank" className="h-4 w-4 shrink-0" />{PAY.bank}</li>
+  <li className="flex items-center gap-2"><Icon name="phone" className="h-4 w-4 shrink-0" />{PAY.ewallet}</li>
+  <li className="flex items-center gap-2"><Icon name="qr" className="h-4 w-4 shrink-0" />QRIS tersedia lewat WhatsApp</li>
+</ul>
+      {t.pay_status === "proof" && (
+  <p className="flex items-center gap-1.5 text-sm text-amber-600">
+    <Icon name="clock" className="h-4 w-4 shrink-0" />Bukti sudah diterima, menunggu verifikasi admin.
+  </p>
+)}
       {t.pay_status === "rejected" && <p className="text-sm text-red-600">Bukti ditolak admin. Silakan upload ulang.</p>}
       <form action={send} className="mt-2">
         <input type="hidden" name="code" value={t.code} />
         <input type="file" name="file" accept="image/*" className="mb-2 block w-full text-sm" />
         <div className="flex flex-wrap gap-2">
-          <button disabled={pending} className="rounded-lg bg-violet-600 px-4 py-2 font-bold text-white disabled:opacity-50">
+          <button disabled={pending} className="rounded-lg bg-black px-4 py-2 font-bold text-white disabled:opacity-50">
             {pending ? "Mengirim..." : "Kirim Bukti"}
           </button>
-          <a href={wa} target="_blank" className="rounded-lg border border-violet-600 px-4 py-2 font-bold text-violet-600">Kirim via WhatsApp</a>
+          <a href={wa} target="_blank" className="rounded-lg border border-black px-4 py-2 font-bold text-pink-600">Kirim via WhatsApp</a>
         </div>
       </form>
       {msg && <p className="mt-2 text-sm">{msg}</p>}

@@ -11,20 +11,32 @@ export default function AddToCart({ s, compact }: { s: Service; compact?: boolea
   const [ok, setOk] = useState(false);
   const item = { id: s.id, slug: s.slug, name: s.name, price: s.price, unit: s.unit };
   const put = () => { add(item, q); setOk(true); setTimeout(() => setOk(false), 1500); };
-
   if (compact)
-    return <button onClick={put} className="rounded-lg bg-violet-600 px-3 py-2 text-sm font-bold text-white">{ok ? "✓ Masuk" : "+ Keranjang"}</button>;
-
+    return (
+      <button onClick={put} className="rounded-full bg-white px-3.5 py-1.5 text-xs font-bold shadow-md hover:bg-gray-100">
+        {ok ? "✓ Masuk" : "+ Keranjang"}
+      </button>
+    );
   return (
     <div>
       <label className="text-sm font-semibold">Jumlah ({s.unit})</label>
-      <input type="number" min={1} max={100} value={q}
+      <input
+        type="number" min={1} max={100} value={q}
         onChange={(e) => setQ(Math.max(1, Number(e.target.value) || 1))}
-        className="my-2 w-full rounded-lg border p-2" />
-      <div className="flex gap-2">
-        <button onClick={put} className="flex-1 rounded-lg border border-violet-600 py-2 font-bold text-violet-600">{ok ? "✓ Masuk" : "+ Keranjang"}</button>
-        <button onClick={() => { add(item, q); router.push("/checkout"); }} className="flex-1 rounded-lg bg-violet-600 py-2 font-bold text-white">Booking Sekarang</button>
-      </div>
+        className="mb-3 mt-1.5 w-full rounded-xl bg-gray-100 p-3 outline-none focus:ring-2 focus:ring-black"
+      />
+      <button
+        onClick={() => { add(item, q); router.push("/checkout"); }}
+        className="w-full rounded-full bg-black py-3 font-bold text-white hover:bg-gray-800"
+      >
+        Booking Sekarang
+      </button>
+      <button
+        onClick={put}
+        className="mt-2 w-full rounded-full border border-gray-300 py-3 font-bold hover:border-black"
+      >
+        {ok ? "✓ Masuk keranjang" : "+ Tambah ke keranjang"}
+      </button>
     </div>
   );
 }

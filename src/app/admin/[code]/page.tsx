@@ -82,7 +82,7 @@ export default async function AdminOrder({ params }: { params: Promise<{ code: s
         <input name="title" placeholder="mis. Naik ke Legend III" className={inp} />
         <label className="text-sm font-semibold">Detail</label>
         <textarea name="detail" rows={2} className={inp} />
-        <button className="rounded-lg bg-violet-600 px-5 py-2 font-bold text-white">Simpan update</button>
+        <button className="rounded-lg bg-black px-5 py-2 font-bold text-white">Simpan update</button>
       </form>
 
       <div className={`${card} mt-4`}>

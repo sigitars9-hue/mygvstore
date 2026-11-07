@@ -29,7 +29,7 @@ export default function Checkout() {
     });
 
   if (!items.length)
-    return <p>Keranjang masih kosong. <Link href="/" className="font-bold text-violet-600">Lihat layanan</Link></p>;
+    return <p>Keranjang masih kosong. <Link href="/" className="font-bold text-pink-600">Lihat layanan</Link></p>;
 
   const inp = "mb-3 w-full rounded-lg border p-2";
   return (
@@ -53,7 +53,7 @@ export default function Checkout() {
         <label className="text-sm font-semibold">Jadwal mulai (opsional)</label>
         <input name="schedule" type="datetime-local" className={inp} />
         {err && <p className="mb-2 text-sm text-red-600">{err}</p>}
-        <button disabled={pending} className="w-full rounded-lg bg-violet-600 py-2.5 font-bold text-white disabled:opacity-50">
+        <button disabled={pending} className="w-full rounded-lg bg-black py-2.5 font-bold text-white disabled:opacity-50">
           {pending ? "Memproses..." : "Booking & Buat Pesanan"}
         </button>
       </form>
