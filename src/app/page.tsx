@@ -5,6 +5,7 @@ import Reveal from "@/components/Reveal";
 import { Icon } from "@/components/Icons";
 import HeroSlider from "@/components/HeroSlider";
 import { SLIDES } from "@/lib/banners";
+import TermsButton from "@/components/TermsButton";
 
 type SP = { q?: string; cat?: string; sort?: string };
 const SORTS: Record<string, string> = {
@@ -37,20 +38,20 @@ export default async function Home({ searchParams }: { searchParams: Promise<SP>
     return s ? `/?${s}` : "/";
   };
   const wa = `https://wa.me/${process.env.NEXT_PUBLIC_WA_NUMBER}`;
-  const tab = "flex items-center gap-2 rounded-full px-5 py-3 font-semibold";
+  const tab = "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-2.5 text-sm font-semibold md:gap-2 md:px-5 md:py-3 md:text-base";
 
   return (
     <>
         <section className="flex flex-col gap-6 pb-8 pt-4 lg:grid lg:grid-cols-2 lg:items-center lg:gap-x-12 lg:gap-y-6">
-        <h1 className="fade-up max-w-3xl text-4xl font-extrabold leading-[1.15] tracking-tight text-[#0d0c22] sm:text-5xl lg:col-start-1 lg:row-start-1 lg:self-end xl:text-6xl">
-          Joki game terpercaya untuk{" "}
+        <h1 className="fade-up max-w-3xl text-3xl font-bold leading-[1.15] tracking-tight text-[#0d0c22] sm:text-4xl lg:col-start-1 lg:row-start-1 lg:self-end xl:text-5xl">
+          Joki Game Gacha Dengan Harga Terbaik dan Terjangkau Untuk{" "}
           <span className="word-box text-pink-400">
             <span className="word-list">
-              <span>daily &amp; event</span>
-              <span>spiral abyss</span>
-              <span>farming material</span>
-              <span>story clear</span>
-              <span>daily &amp; event</span>
+              <span>Daily &amp; Event</span>
+              <span>Spiral Abyss</span>
+              <span>Farming Material</span>
+              <span>Story Clear</span>
+              <span>Daily &amp; Event</span>
             </span>
           </span>
         </h1>
@@ -58,20 +59,20 @@ export default async function Home({ searchParams }: { searchParams: Promise<SP>
         <div style={{ "--d": "0.2s" } as React.CSSProperties} className="fade-up lg:col-start-2 lg:row-span-2 lg:row-start-1">
           <HeroSlider slides={SLIDES} />
         </div>
-
-        <a
-          href="#game"
-          style={{ "--d": "0.35s" } as React.CSSProperties}
-          className="fade-up inline-flex items-center gap-2 self-start rounded-full bg-[#0d0c22] px-6 py-4 font-bold text-white hover:bg-black lg:col-start-1 lg:row-start-2"
-        >
-          <Icon name="sparkle" />Mulai Booking
-        </a>
+<Link
+  href="/testimoni"
+  style={{ "--d": "0.35s" } as React.CSSProperties}
+  className="fade-up inline-flex items-center gap-2 self-center rounded-full px-5 py-3 font-semibold text-[#0d0c22] hover:text-pink-500 lg:col-start-1 lg:row-start-2 lg:self-start lg:px-0"
+>
+  <Icon name="star" className="h-5 w-5" />Testimoni
+</Link>
       </section>
 
-      <div id="game" className="flex flex-wrap gap-2 scroll-mt-20 pt-2">
-        <Link href="/" className={`${tab} bg-gray-100`}><Icon name="grid" />Game</Link>
-        <a href={wa} target="_blank" className={`${tab} text-gray-600 hover:bg-gray-50`}><Icon name="chat" />Hubungi Admin</a>
-      </div>
+<div id="game" className="flex items-center gap-1 overflow-x-auto scroll-mt-4 pt-2 [scrollbar-width:none] md:flex-wrap md:gap-2 md:overflow-visible [&::-webkit-scrollbar]:hidden">
+  <Link href="/" className={`${tab} bg-gray-100`}><Icon name="grid" />Game</Link>
+  <a href={wa} target="_blank" className={`${tab} text-gray-600 hover:bg-gray-50`}><Icon name="chat" />Hubungi Admin</a>
+  <TermsButton className="md:ml-auto" />
+</div>
 
       <form action="/" className="mt-5 flex items-center rounded-full bg-gray-100 py-2.5 pl-8 pr-2.5">
         {cat && <input type="hidden" name="cat" value={cat} />}
@@ -102,7 +103,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<SP>
       </div>
 
       {list.length === 0 && <p className="py-16 text-center text-gray-500">Game tidak ditemukan.</p>}
-      <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="mt-8 grid grid-cols-1 gap-5">
         {list.map((g, i) => (
           <Reveal key={g.id} delay={(i % 2) * 0.08} className="min-w-0"><GameCard g={g} i={i} /></Reveal>
         ))}

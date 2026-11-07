@@ -11,10 +11,9 @@ export default function TermsButton({ className = "" }: { className?: string }) 
       <button
         type="button"
         onClick={() => ref.current?.showModal()}
-        className={`flex items-center gap-2 rounded-full border border-gray-300 px-5 py-2.5 text-sm font-bold hover:border-black ${className}`}
-      >
-        <Icon name="receipt" className="h-4 w-4" />
-        Baca Syarat &amp; Ketentuan
+        className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-50 md:gap-2 md:px-5 md:py-3 md:text-base ${className}`}
+       > <Icon name="receipt" className="h-5 w-5" />
+S &amp; K
       </button>
 
       <dialog

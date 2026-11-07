@@ -32,18 +32,13 @@ export default function Header() {
   const n = useCart((s) => s.items.reduce((a, b) => a + b.qty, 0));
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const f = () => setScrolled(window.scrollY > 8);
-    f();
-    window.addEventListener("scroll", f, { passive: true });
-    return () => window.removeEventListener("scroll", f);
   }, []);
 
   return (
-    <header className={`sticky top-0 z-30 bg-white/90 backdrop-blur transition-shadow ${scrolled ? "shadow-sm" : ""}`}>
+    <header className="relative z-30 bg-white">
       <div className="mx-auto flex h-[68px] max-w-7xl items-center gap-4 px-5 md:gap-8">
         <button aria-label="Menu" onClick={() => setOpen(!open)} className="-ml-1 p-1 md:hidden">
           <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="#0d0c22" strokeWidth="2.2" strokeLinecap="round">

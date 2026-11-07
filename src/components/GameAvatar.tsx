@@ -16,7 +16,7 @@ export default function GameAvatar({ slug, name, size = 64 }: { slug: string; na
     );
   }
   return (
-    <span className={box} style={{ width: size, height: size }}>
+    <span className={`${box} block`} style={{ width: size, height: size }}>
       <Image src={src} alt={`Ikon ${name}`} fill sizes={`${size}px`} className="object-cover" />
     </span>
   );
