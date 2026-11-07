@@ -11,7 +11,7 @@ const mona = Mona_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "JokiKu: Jasa Joki Terpercaya",
+  title: "Mygvstore: Jasa Joki Terpercaya",
   description: "Booster profesional, akun aman, progres bisa dipantau real-time.",
 };
 

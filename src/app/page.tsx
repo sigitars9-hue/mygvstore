@@ -3,6 +3,8 @@ import { loadCatalog, type GameView } from "@/lib/catalog";
 import GameCard from "@/components/GameCard";
 import Reveal from "@/components/Reveal";
 import { Icon } from "@/components/Icons";
+import HeroSlider from "@/components/HeroSlider";
+import { SLIDES } from "@/lib/banners";
 
 type SP = { q?: string; cat?: string; sort?: string };
 const SORTS: Record<string, string> = {
@@ -39,8 +41,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<SP>
 
   return (
     <>
-      <section className="pb-8 pt-4">
-        <h1 className="fade-up max-w-3xl text-4xl font-extrabold leading-[1.15] tracking-tight text-[#0d0c22] sm:text-5xl lg:text-6xl">
+        <section className="flex flex-col gap-6 pb-8 pt-4 lg:grid lg:grid-cols-2 lg:items-center lg:gap-x-12 lg:gap-y-6">
+        <h1 className="fade-up max-w-3xl text-4xl font-extrabold leading-[1.15] tracking-tight text-[#0d0c22] sm:text-5xl lg:col-start-1 lg:row-start-1 lg:self-end xl:text-6xl">
           Joki game terpercaya untuk{" "}
           <span className="word-box text-pink-400">
             <span className="word-list">
@@ -52,23 +54,22 @@ export default async function Home({ searchParams }: { searchParams: Promise<SP>
             </span>
           </span>
         </h1>
-        <ul className="mt-6 space-y-3">
-          {["Pilih game, lihat joki yang tersedia, lalu booking", "Pantau progres joki langsung lewat kode pesanan", "Booster berpengalaman, akun dikerjakan aman"].map((t, i) => (
-            <li key={t} style={{ "--d": `${0.15 + i * 0.1}s` } as React.CSSProperties} className="fade-up flex items-center gap-3 text-[17px]">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-pink-100 text-pink-500"><Icon name="check" className="h-4 w-4" /></span>
-              {t}
-            </li>
-          ))}
-        </ul>
-        <a href="#game" style={{ "--d": "0.5s" } as React.CSSProperties}
-          className="fade-up mt-7 inline-flex items-center gap-2 rounded-full bg-[#0d0c22] px-6 py-4 font-bold text-white hover:bg-black">
+
+        <div style={{ "--d": "0.2s" } as React.CSSProperties} className="fade-up lg:col-start-2 lg:row-span-2 lg:row-start-1">
+          <HeroSlider slides={SLIDES} />
+        </div>
+
+        <a
+          href="#game"
+          style={{ "--d": "0.35s" } as React.CSSProperties}
+          className="fade-up inline-flex items-center gap-2 self-start rounded-full bg-[#0d0c22] px-6 py-4 font-bold text-white hover:bg-black lg:col-start-1 lg:row-start-2"
+        >
           <Icon name="sparkle" />Mulai Booking
         </a>
       </section>
 
       <div id="game" className="flex flex-wrap gap-2 scroll-mt-20 pt-2">
         <Link href="/" className={`${tab} bg-gray-100`}><Icon name="grid" />Game</Link>
-        <Link href="/lacak" className={`${tab} text-gray-600 hover:bg-gray-50`}><Icon name="chart" />Lacak Progres</Link>
         <a href={wa} target="_blank" className={`${tab} text-gray-600 hover:bg-gray-50`}><Icon name="chat" />Hubungi Admin</a>
       </div>
 
@@ -101,9 +102,9 @@ export default async function Home({ searchParams }: { searchParams: Promise<SP>
       </div>
 
       {list.length === 0 && <p className="py-16 text-center text-gray-500">Game tidak ditemukan.</p>}
-      <div className="mt-8 grid gap-6 lg:grid-cols-2">
+      <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
         {list.map((g, i) => (
-          <Reveal key={g.id} delay={(i % 2) * 0.08}><GameCard g={g} i={i} /></Reveal>
+          <Reveal key={g.id} delay={(i % 2) * 0.08} className="min-w-0"><GameCard g={g} i={i} /></Reveal>
         ))}
       </div>
     </>

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart-store";
 import { createOrder } from "@/app/actions/order";
 import { rp } from "@/lib/utils";
-
+import TermsButton from "@/components/TermsButton";
 export default function Checkout() {
   const { items, remove, clear } = useCart();
   const router = useRouter();
@@ -53,6 +53,8 @@ export default function Checkout() {
         <label className="text-sm font-semibold">Jadwal mulai (opsional)</label>
         <input name="schedule" type="datetime-local" className={inp} />
         {err && <p className="mb-2 text-sm text-red-600">{err}</p>}
+                <p className="mb-2 text-xs text-gray-500">Dengan membooking, kamu menyetujui syarat dan ketentuan yang berlaku.</p>
+        <TermsButton className="mb-3 w-full justify-center" />
         <button disabled={pending} className="w-full rounded-lg bg-black py-2.5 font-bold text-white disabled:opacity-50">
           {pending ? "Memproses..." : "Booking & Buat Pesanan"}
         </button>

@@ -30,7 +30,7 @@ export default function GameCard({ g, i }: { g: GameView; i: number }) {
               <Icon name="star" className="h-4 w-4" />{g.rating ? g.rating.toFixed(1) : "Baru"}
               {g.reviews > 0 && <span className="font-normal text-gray-400">({g.reviews})</span>}
             </span>
-            <span className={`${info} gap-1`}><Icon name="check" className="h-4 w-4" />{g.projects.toLocaleString("id-ID")} proyek</span>
+            <span className={`${info} gap-1`}><Icon name="check" className="h-4 w-4" />{g.projects.toLocaleString("id-ID")} Testimoni</span>
             {g.promoted && <span className="font-semibold text-gray-400">Dipromosikan</span>}
           </div>
         </div>

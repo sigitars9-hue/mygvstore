@@ -15,8 +15,8 @@ const NAV: { label: string; items: Item[] }[] = [
     ],
     
   },
-  { label: "Cara Order", items: [["Pilih layanan", "/"], ["Keranjang & checkout", "/checkout"], ["Lacak progres", "/lacak"]] },
-  { label: "Bantuan", items: [["Hubungi admin (WhatsApp)", WA], ["Lacak pesanan", "/lacak"], ["Login admin", "/admin/login"]] },
+  { label: "Cara Order", items: [["Pilih layanan", "/"], ["Keranjang & checkout", "/checkout"],] },
+  { label: "Bantuan", items: [["Hubungi admin (WhatsApp)", WA], ["Login admin", "/admin/login"]] },
 ];
 
 function NavLink({ item, className, onClick }: { item: Item; className: string; onClick?: () => void }) {
@@ -52,7 +52,7 @@ export default function Header() {
         </button>
 
         <Link href="/" className="text-2xl font-black tracking-tight text-[#0d0c22]">
-          joki<span className="text-pink-500">ku</span>
+          My<span className="text-pink-500">gvstore</span>
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
@@ -74,7 +74,6 @@ export default function Header() {
         </nav>
 
         <div className="ml-auto flex items-center gap-5">
-          <Link href="/lacak" className="hidden text-[15px] font-semibold text-[#0d0c22] hover:text-pink-600 md:block">Lacak Progres</Link>
           <Link href="/checkout" className="flex items-center gap-2 rounded-full bg-[#0d0c22] px-5 py-3 text-sm font-bold text-white hover:bg-black">
             <Icon name="cart" className="h-4 w-4" />
             Keranjang
@@ -103,7 +102,6 @@ export default function Header() {
                 </div>
               </details>
             ))}
-            <Link href="/lacak" onClick={() => setOpen(false)} className="block py-3.5 font-semibold">Lacak Progres</Link>
           </div>
         </div>
       </div>
