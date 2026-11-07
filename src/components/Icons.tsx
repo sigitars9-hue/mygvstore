@@ -1,6 +1,9 @@
 import type { ReactNode } from "react";
 
 const P = {
+    send: <><path d="M21 3 10 14" /><path d="m21 3-7 18-4-7-7-4 18-7Z" /></>,
+  alert: <><circle cx="12" cy="12" r="9" /><path d="M12 7.5v5M12 16v.01" /></>,
+  wallet: <><path d="M4 7a2 2 0 0 1 2-2h12v3" /><rect x="3" y="8" width="18" height="12" rx="2.5" /><path d="M16 14h2" /></>,
   search: <><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></>,
   cart: <><circle cx="9" cy="20" r="1.5" /><circle cx="18" cy="20" r="1.5" /><path d="M2 3h3l2.7 11.4a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 7H6" /></>,
   grid: <><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></>,
@@ -22,6 +25,8 @@ const P = {
   list: <><rect x="4" y="3" width="14" height="18" rx="2.5" /><path d="M8 8h6M8 12h6M8 16h3" /></>,
   left: <path d="m15 6-6 6 6 6" />,
   right: <path d="m9 6 6 6-6 6" />,
+    copy: <><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V6a2 2 0 0 1 2-2h9" /></>,
+  download: <><path d="M12 4v11M7 10l5 5 5-5" /><path d="M5 20h14" /></>,
 } satisfies Record<string, ReactNode>;
 
 export type IconName = keyof typeof P;
