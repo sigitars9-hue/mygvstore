@@ -9,10 +9,11 @@ const WA = `https://wa.me/${process.env.NEXT_PUBLIC_WA_NUMBER}`;
 const NAV: { label: string; items: Item[] }[] = [
   {
     label: "Layanan",
-    items: [
-      ["Semua layanan", "/"], ["Mobile Legends", "/?game=Mobile%20Legends"], ["Valorant", "/?game=Valorant"],
-      ["Genshin Impact", "/?game=Genshin%20Impact"], ["PUBG Mobile", "/?game=PUBG%20Mobile"], ["Free Fire", "/?game=Free%20Fire"],
+        items: [
+      ["Semua game", "/"], ["Genshin Impact", "/game/genshin-impact"], ["Honkai: Star Rail", "/game/honkai-star-rail"],
+      ["Zenless Zone Zero", "/game/zenless-zone-zero"], ["Wuthering Waves", "/game/wuthering-waves"], ["NIKKE", "/game/nikke"],
     ],
+    
   },
   { label: "Cara Order", items: [["Pilih layanan", "/"], ["Keranjang & checkout", "/checkout"], ["Lacak progres", "/lacak"]] },
   { label: "Bantuan", items: [["Hubungi admin (WhatsApp)", WA], ["Lacak pesanan", "/lacak"], ["Login admin", "/admin/login"]] },

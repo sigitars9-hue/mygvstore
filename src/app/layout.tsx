@@ -1,9 +1,14 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Mona_Sans } from "next/font/google";
 import Header from "@/components/Header";
 
-const inter = Inter({ subsets: ["latin"], display: "swap" });
+const mona = Mona_Sans({
+  subsets: ["latin"],
+  weight: "variable",
+  display: "swap",
+  fallback: ["Helvetica Neue", "Helvetica", "Arial", "sans-serif"],
+});
 
 export const metadata: Metadata = {
   title: "JokiKu: Jasa Joki Terpercaya",
@@ -13,7 +18,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="id">
-<body className={`${inter.className} bg-white text-gray-900 antialiased`}>
+<body className={`${mona.className} bg-white text-gray-900 antialiased`}>
   <Header />
   <main className="mx-auto max-w-7xl p-5">{children}</main>
 </body>

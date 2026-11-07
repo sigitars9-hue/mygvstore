@@ -18,6 +18,10 @@ const P = {
   qr: <><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><path d="M14 14h3v3M21 14v.01M14 21h3M21 17v4" /></>,
   back: <path d="M19 12H5M11 6l-6 6 6 6" />,
     sparkle: <><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z" /><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8L19 16Z" /></>,
+      coin: <><circle cx="12" cy="12" r="9" /><path d="M14.8 9.2c-.5-1-1.5-1.5-2.8-1.5-1.6 0-2.7.8-2.7 2 0 3 5.6 1.4 5.6 4.3 0 1.2-1.2 2-2.9 2-1.4 0-2.5-.6-3-1.7M12 6v1.7M12 16.3V18" /></>,
+  list: <><rect x="4" y="3" width="14" height="18" rx="2.5" /><path d="M8 8h6M8 12h6M8 16h3" /></>,
+  left: <path d="m15 6-6 6 6 6" />,
+  right: <path d="m9 6 6 6-6 6" />,
 } satisfies Record<string, ReactNode>;
 
 export type IconName = keyof typeof P;
