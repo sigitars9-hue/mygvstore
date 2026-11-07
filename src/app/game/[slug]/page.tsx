@@ -5,6 +5,7 @@ import { rp } from "@/lib/utils";
 import { Icon } from "@/components/Icons";
 import AddToCart from "@/components/AddToCart";
 import TermsButton from "@/components/TermsButton";
+import GameAvatar from "@/components/GameAvatar";
 
 export default async function GamePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -26,6 +27,7 @@ export default async function GamePage({ params }: { params: Promise<{ slug: str
       </Link>
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
+        <GameAvatar slug={g.slug} name={g.name} size={56} />
         <h1 className="text-3xl font-extrabold uppercase tracking-tight sm:text-4xl">{g.name}</h1>
         {g.badges.map((b) => (
           <span key={b} className="rounded-lg bg-slate-800 px-2.5 py-1 text-xs font-extrabold text-white">{b}</span>

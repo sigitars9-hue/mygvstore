@@ -76,7 +76,6 @@ export default function Header() {
         <div className="ml-auto flex items-center gap-5">
           <Link href="/checkout" className="flex items-center gap-2 rounded-full bg-[#0d0c22] px-5 py-3 text-sm font-bold text-white hover:bg-black">
             <Icon name="cart" className="h-4 w-4" />
-            Keranjang
             {mounted && n > 0 && <span key={n} className="pop rounded-full bg-pink-500 px-1.5 py-0.5 text-xs">{n}</span>}
           </Link>
         </div>

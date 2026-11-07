@@ -5,6 +5,7 @@ import { Icon } from "@/components/Icons";
 import ServiceArt, { KEYS, bgOf } from "@/components/ServiceArt";
 import Carousel from "@/components/Carousel";
 import SaveButton from "@/components/SaveButton";
+import GameAvatar from "@/components/GameAvatar";
 
 export default function GameCard({ g, i }: { g: GameView; i: number }) {
   const cats = g.categories;
@@ -12,9 +13,7 @@ export default function GameCard({ g, i }: { g: GameView; i: number }) {
   return (
     <article className="rounded-3xl border border-gray-200 bg-white p-6 transition duration-300 hover:shadow-xl">
       <div className="flex items-center gap-4">
-        <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#0d0c22] text-2xl font-black text-white">
-          {g.name.charAt(0)}
-        </span>
+        <GameAvatar slug={g.slug} name={g.name} size={64} />
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <Link href={`/game/${g.slug}`} className="text-xl font-bold tracking-tight text-[#0d0c22] hover:text-pink-600 sm:text-2xl">
