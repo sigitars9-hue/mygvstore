@@ -6,6 +6,7 @@ import { Icon } from "@/components/Icons";
 import HeroSlider from "@/components/HeroSlider";
 import { SLIDES } from "@/lib/banners";
 import TermsButton from "@/components/TermsButton";
+import { getSlides } from "@/lib/slides";
 
 type SP = { q?: string; cat?: string; sort?: string };
 const SORTS: Record<string, string> = {
@@ -21,7 +22,7 @@ const BY: Record<string, (a: GameView, b: GameView) => number> = {
 export default async function Home({ searchParams }: { searchParams: Promise<SP> }) {
   const { q, cat, sort = "populer" } = await searchParams;
   const { games } = await loadCatalog();
-
+  const slides = await getSlides();
   const freq = new Map<string, number>();
   games.forEach((g) => g.categories.forEach((c) => freq.set(c, (freq.get(c) ?? 0) + 1)));
   const cats = [...freq.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6).map(([c]) => c);
@@ -57,7 +58,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<SP>
         </h1>
 
         <div style={{ "--d": "0.2s" } as React.CSSProperties} className="fade-up lg:col-start-2 lg:row-span-2 lg:row-start-1">
-          <HeroSlider slides={SLIDES} />
+          <HeroSlider slides={slides} />
         </div>
 <Link
   href="/testimoni"

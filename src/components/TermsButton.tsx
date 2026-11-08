@@ -2,8 +2,9 @@
 import { useRef } from "react";
 import { Icon } from "@/components/Icons";
 import { TERMS } from "@/lib/terms";
+import type { Term } from "@/lib/terms-db";
 
-export default function TermsButton({ className = "" }: { className?: string }) {
+export default function TermsButton({ className = "", terms = TERMS }: { className?: string; terms?: Term[] }) {
   const ref = useRef<HTMLDialogElement>(null);
   const close = () => ref.current?.close();
   return (

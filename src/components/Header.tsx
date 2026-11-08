@@ -1,9 +1,7 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useCart } from "@/lib/cart-store";
+import { useState } from "react";
 import { Icon } from "@/components/Icons";
-
 type Item = [label: string, href: string];
 const WA = `https://wa.me/${process.env.NEXT_PUBLIC_WA_NUMBER}`;
 const NAV: { label: string; items: Item[] }[] = [
@@ -15,7 +13,7 @@ const NAV: { label: string; items: Item[] }[] = [
     ],
     
   },
-  { label: "Cara Order", items: [["Pilih layanan", "/"], ["Keranjang & checkout", "/checkout"],] },
+  { label: "Cara Order", items: [["Pilih layanan", "/"], ["Chat admin (WhatsApp)", WA]] },
   { label: "Bantuan", items: [["Hubungi admin (WhatsApp)", WA], ["Login admin", "/admin/login"]] },
 ];
 
@@ -29,13 +27,7 @@ function NavLink({ item, className, onClick }: { item: Item; className: string; 
 }
 
 export default function Header() {
-  const n = useCart((s) => s.items.reduce((a, b) => a + b.qty, 0));
-  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   return (
     <header className="relative z-30 bg-white">
@@ -68,12 +60,17 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-5">
-          <Link href="/checkout" className="flex items-center gap-2 rounded-full bg-[#0d0c22] px-5 py-3 text-sm font-bold text-white hover:bg-black">
-            <Icon name="cart" className="h-4 w-4" />
-            {mounted && n > 0 && <span key={n} className="pop rounded-full bg-pink-500 px-1.5 py-0.5 text-xs">{n}</span>}
-          </Link>
-        </div>
+<div className="ml-auto flex items-center gap-5">
+  <a
+    href={WA}
+    target="_blank"
+    rel="noreferrer"
+    className="flex items-center gap-2 rounded-full bg-[#0d0c22] px-5 py-3 text-sm font-bold text-white hover:bg-black"
+  >
+    <Icon name="chat" className="h-4 w-4" />
+    <span className="hidden sm:inline">Chat Admin</span>
+  </a>
+</div>
       </div>
 
       {/* Menu HP */}

@@ -3,9 +3,10 @@ import { notFound } from "next/navigation";
 import { loadCatalog } from "@/lib/catalog";
 import { rp } from "@/lib/utils";
 import { Icon } from "@/components/Icons";
-import AddToCart from "@/components/AddToCart";
 import TermsButton from "@/components/TermsButton";
 import GameAvatar from "@/components/GameAvatar";
+import Image from "next/image";
+import OrderButton from "@/components/OrderButton";
 
 export default async function GamePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -27,7 +28,7 @@ export default async function GamePage({ params }: { params: Promise<{ slug: str
       </Link>
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
-        <GameAvatar slug={g.slug} name={g.name} size={56} />
+        <GameAvatar slug={g.slug} name={g.name} size={56} src={g.icon} />
         <h1 className="text-3xl font-extrabold uppercase tracking-tight sm:text-4xl">{g.name}</h1>
         {g.badges.map((b) => (
           <span key={b} className="rounded-lg bg-slate-800 px-2.5 py-1 text-xs font-extrabold text-white">{b}</span>
@@ -39,7 +40,19 @@ export default async function GamePage({ params }: { params: Promise<{ slug: str
         <span className={chip}><Icon name="list" className="h-4 w-4" />{g.jokiCount} joki · {rows.length} layanan</span>
       </div>
       <div className="mt-4"><TermsButton /></div>
-
+{g.categories.length > 0 && (
+  <div className="mt-6 flex gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    {g.categories.map((c) => {
+      const img = g.categoryImages[c];
+      return (
+        <div key={c} className="relative aspect-[4/3] w-36 shrink-0 overflow-hidden rounded-2xl bg-gray-100 sm:w-44">
+          {img && <Image src={img} alt={c} fill sizes="176px" className="object-cover" />}
+          <span className="absolute bottom-0 left-0 max-w-full truncate rounded-tr-xl bg-white px-2.5 py-1 text-[10px] font-bold">{c}</span>
+        </div>
+      );
+    })}
+  </div>
+)}
       {g.is_soon && <p className="mt-10 rounded-2xl bg-gray-50 p-8 text-center text-gray-500">Game ini segera hadir. Pantau terus ya!</p>}
       {!g.is_soon && rows.length === 0 && <p className="mt-10 text-center text-gray-500">Belum ada layanan tersedia untuk game ini.</p>}
 
@@ -58,7 +71,7 @@ export default async function GamePage({ params }: { params: Promise<{ slug: str
                   </p>
                 </div>
                 <b className="shrink-0">{rp(s.price)}</b>
-                <AddToCart s={s} compact />
+               <OrderButton s={s} compact />
               </li>
             ))}
           </ul>

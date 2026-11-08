@@ -1,9 +1,10 @@
 import Image from "next/image";
 import { GAME_ICONS } from "@/lib/game-icons";
 
-// Foto profil game. Kalau ikonnya belum ada, tampil lingkaran gelap berisi inisial.
-export default function GameAvatar({ slug, name, size = 64 }: { slug: string; name: string; size?: number }) {
-  const src = GAME_ICONS[slug];
+export default function GameAvatar({
+  slug, name, size = 64, src: custom,
+}: { slug: string; name: string; size?: number; src?: string | null }) {
+  const src = custom || GAME_ICONS[slug];
   const box = "relative shrink-0 overflow-hidden rounded-full bg-[#0d0c22]";
   if (!src) {
     return (

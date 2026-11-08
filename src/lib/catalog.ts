@@ -4,6 +4,7 @@ import type { Service } from "@/lib/utils";
 export type Game = {
   id: string; slug: string; name: string; is_soon: boolean; promoted: boolean;
   badges: string[]; categories: string[]; sort: number;
+  icon_url: string | null; category_images: Record<string, string> | null;
 };
 export type Joki = {
   id: string; slug: string; game_id: string; name: string; bio: string | null;
@@ -13,6 +14,7 @@ export type JokiView = Joki & { services: Service[]; rating: number | null; revi
 export type GameView = Game & {
   jokiCount: number; minPrice: number | null; rating: number | null;
   reviews: number; projects: number; response: number;
+  icon: string | null; categoryImages: Record<string, string>;
 };
 
 export const respText = (m: number) => (m < 60 ? `${m} menit` : m === 60 ? "1 jam" : `${Math.round(m / 60)} jam`);
@@ -49,6 +51,8 @@ export async function loadCatalog() {
       ...gm, jokiCount: js.length, minPrice: prices.length ? Math.min(...prices) : null,
       rating: n ? sum / n : null, reviews: n, projects: js.reduce((a, x) => a + x.projects_done, 0),
       response: js.length ? Math.round(js.reduce((a, x) => a + x.response_minutes, 0) / js.length) : 60,
+      icon: gm.icon_url ?? null,
+      categoryImages: gm.category_images ?? {},
     };
   });
   return { games, jokis };

@@ -6,6 +6,7 @@ import ServiceArt, { KEYS, bgOf } from "@/components/ServiceArt";
 import Carousel from "@/components/Carousel";
 import SaveButton from "@/components/SaveButton";
 import GameAvatar from "@/components/GameAvatar";
+import Image from "next/image";
 
 export default function GameCard({ g, i }: { g: GameView; i: number }) {
   const cats = g.categories;
@@ -29,27 +30,32 @@ export default function GameCard({ g, i }: { g: GameView; i: number }) {
       </Link>
     );
 
-  const thumb = (c: string, k: number, cls: string) => {
-    const key = KEYS[(i + k) % KEYS.length];
-    return (
-      <div key={c} className={`relative aspect-[4/3] overflow-hidden rounded-2xl lg:aspect-[16/10] lg:rounded-3xl ${bgOf(key)} ${cls}`}>
+const thumb = (c: string, k: number, cls: string) => {
+  const key = KEYS[(i + k) % KEYS.length];
+  const img = g.categoryImages[c];
+  return (
+    <div key={c} className={`relative aspect-[4/3] overflow-hidden rounded-2xl lg:aspect-[16/10] lg:rounded-3xl ${img ? "bg-gray-100" : bgOf(key)} ${cls}`}>
+      {img ? (
+        <Image src={img} alt={c} fill sizes="(min-width: 1024px) 280px, 144px" className="object-cover" />
+      ) : (
         <ServiceArt k={key} className="h-full w-full p-2.5 pb-7 lg:p-4 lg:pb-10" />
-        <span className="absolute bottom-0 left-0 max-w-full truncate rounded-tr-xl bg-white px-2.5 py-1 text-[10px] font-bold lg:rounded-tr-3xl lg:px-4 lg:py-2 lg:text-xs">
-          {c}
-        </span>
-      </div>
-    );
-  };
+      )}
+      <span className="absolute bottom-0 left-0 max-w-full truncate rounded-tr-xl bg-white px-2.5 py-1 text-[10px] font-bold lg:rounded-tr-3xl lg:px-4 lg:py-2 lg:text-xs">
+        {c}
+      </span>
+    </div>
+  );
+};
 
   return (
     <article className="rounded-3xl border border-gray-200 bg-white p-4 transition duration-300 hover:shadow-xl lg:p-5">
       <div className="lg:flex lg:items-center lg:gap-4">
         <div className="flex items-center gap-3 lg:min-w-0 lg:flex-1 lg:gap-4">
           <div className="relative h-12 w-12 shrink-0 lg:hidden">
-  <GameAvatar slug={g.slug} name={g.name} size={48} />
+  <span className="shrink-0 lg:hidden"><GameAvatar slug={g.slug} name={g.name} size={48} src={g.icon} /></span>
 </div>
 <div className="relative hidden h-16 w-16 shrink-0 lg:block">
-  <GameAvatar slug={g.slug} name={g.name} size={64} />
+  <span className="hidden shrink-0 lg:block"><GameAvatar slug={g.slug} name={g.name} size={64} src={g.icon} /></span>
 </div>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
