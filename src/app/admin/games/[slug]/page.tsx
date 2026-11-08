@@ -97,6 +97,14 @@ export default async function AdminGame({ params }: { params: Promise<{ slug: st
           <label className={lbl}>Badge (pisahkan dengan koma)</label>
           <input name="badges" defaultValue={(g.badges ?? []).join(", ")} placeholder="POPULER, TERPERCAYA" className={inp} />
         </div>
+        <div>
+  <label className={lbl}>Nama CS</label>
+  <input name="cs_name" defaultValue={g.cs_name ?? ""} placeholder="mis. Imy" className={inp} />
+</div>
+<div>
+  <label className={lbl}>WhatsApp CS (kosong = nomor default)</label>
+  <input name="cs_wa" defaultValue={g.cs_wa ?? ""} placeholder="6281234567890" className={inp} />
+</div>
         <label className="flex items-center gap-2 text-sm font-medium">
           <input type="checkbox" name="promoted" defaultChecked={g.promoted} className="h-4 w-4 accent-black" />Dipromosikan
         </label>

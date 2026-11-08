@@ -1,12 +1,15 @@
 import { rp, type Service } from "@/lib/utils";
 import { Icon } from "@/components/Icons";
 
-const WA = process.env.NEXT_PUBLIC_WA_NUMBER;
+const DEFAULT_WA = process.env.NEXT_PUBLIC_WA_NUMBER;
 
-export default function OrderButton({ s, compact }: { s: Service; compact?: boolean }) {
+export default function OrderButton({
+  s, game, cs, csName, compact,
+}: { s: Service; game: string; cs?: string | null; csName?: string | null; compact?: boolean }) {
   const text = [
-    "Halo admin, saya mau pesan joki:",
+    csName ? `Halo kak ${csName}, saya mau pesan:` : "Halo admin, saya mau pesan:",
     "",
+    `Game: ${game}`,
     `Layanan: ${s.name}`,
     `Harga: ${rp(s.price)} ${s.unit}`,
     "",
@@ -17,7 +20,7 @@ export default function OrderButton({ s, compact }: { s: Service; compact?: bool
 
   return (
     <a
-      href={`https://wa.me/${WA}?text=${encodeURIComponent(text)}`}
+      href={`https://wa.me/${cs || DEFAULT_WA}?text=${encodeURIComponent(text)}`}
       target="_blank"
       rel="noreferrer"
       className={

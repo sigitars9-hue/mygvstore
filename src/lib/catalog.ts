@@ -5,6 +5,7 @@ export type Game = {
   id: string; slug: string; name: string; is_soon: boolean; promoted: boolean;
   badges: string[]; categories: string[]; sort: number;
   icon_url: string | null; category_images: Record<string, string> | null;
+  cs_name: string | null; cs_wa: string | null;
 };
 export type Joki = {
   id: string; slug: string; game_id: string; name: string; bio: string | null;
@@ -48,8 +49,12 @@ export async function loadCatalog() {
     const sum = js.reduce((a, x) => a + (x.rating ?? 0) * x.reviews, 0);
     const prices = js.map((x) => x.minPrice).filter((p): p is number => p !== null);
     return {
-      ...gm, jokiCount: js.length, minPrice: prices.length ? Math.min(...prices) : null,
-      rating: n ? sum / n : null, reviews: n, projects: js.reduce((a, x) => a + x.projects_done, 0),
+      ...gm,
+      jokiCount: js.length,
+      minPrice: prices.length ? Math.min(...prices) : null,
+      rating: n ? sum / n : null,
+      reviews: n,
+      projects: js.reduce((a, x) => a + x.projects_done, 0),
       response: js.length ? Math.round(js.reduce((a, x) => a + x.response_minutes, 0) / js.length) : 60,
       icon: gm.icon_url ?? null,
       categoryImages: gm.category_images ?? {},

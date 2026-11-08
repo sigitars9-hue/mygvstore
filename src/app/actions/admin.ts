@@ -17,7 +17,10 @@ const cdn = () => (process.env.R2_PUBLIC_URL ?? "").replace(/\/$/, "");
 const urlOk = (u: string) => !u || u.startsWith("/") || (!!cdn() && u.startsWith(cdn() + "/"));
 const publish = () => revalidatePath("/", "layout");
 const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-
+const waNum = (v: string) => {
+  const d = v.replace(/\D/g, "");
+  return d.startsWith("0") ? "62" + d.slice(1) : d;
+};
 /* ---------- Auth ---------- */
 export async function signIn(fd: FormData): Promise<{ error: string } | undefined> {
   const sb = await createClient();
@@ -75,6 +78,9 @@ export async function saveGame(fd: FormData): Promise<R> {
   const icon = str(fd, "icon_url");
   if (!name) return { error: "Nama game wajib diisi" };
   if (!urlOk(icon)) return { error: "URL gambar tidak valid" };
+    const cs_wa = waNum(str(fd, "cs_wa"));
+  if (cs_wa && !/^\d{9,15}$/.test(cs_wa)) return { error: "Nomor WhatsApp CS tidak valid" };
+    // ...badges, promoted, is_soon seperti sebelumnya
   const { error } = await db.from("games").update({
     name,
     icon_url: icon || null,
@@ -87,6 +93,7 @@ export async function saveGame(fd: FormData): Promise<R> {
   return { ok: true };
 }
 
+
 export async function deleteGame(fd: FormData): Promise<R> {
   await requireAdmin();
   const id = str(fd, "id");
@@ -96,6 +103,7 @@ export async function deleteGame(fd: FormData): Promise<R> {
   if (error) return { error: error.message };
   publish();
   redirect("/admin/games");
+  
 }
 
 export async function saveCategories(fd: FormData): Promise<R> {
