@@ -80,10 +80,11 @@ export async function saveGame(fd: FormData): Promise<R> {
   if (!urlOk(icon)) return { error: "URL gambar tidak valid" };
     const cs_wa = waNum(str(fd, "cs_wa"));
   if (cs_wa && !/^\d{9,15}$/.test(cs_wa)) return { error: "Nomor WhatsApp CS tidak valid" };
-    // ...badges, promoted, is_soon seperti sebelumnya
   const { error } = await db.from("games").update({
     name,
     icon_url: icon || null,
+    cs_name: str(fd, "cs_name") || null,
+    cs_wa: cs_wa || null,
     badges: str(fd, "badges").split(",").map((s) => s.trim()).filter(Boolean),
     promoted: fd.get("promoted") === "on",
     is_soon: fd.get("is_soon") === "on",
