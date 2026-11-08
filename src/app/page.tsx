@@ -63,9 +63,17 @@ export default async function Home({ searchParams }: { searchParams: Promise<SP>
 <Link
   href="/testimoni"
   style={{ "--d": "0.35s" } as React.CSSProperties}
-  className="fade-up inline-flex items-center gap-2 self-center rounded-full px-5 py-3 font-semibold text-[#0d0c22] hover:text-pink-500 lg:col-start-1 lg:row-start-2 lg:self-start lg:px-0"
+  className="fade-up group inline-flex items-center gap-2 self-center rounded-full border border-gray-200 bg-white py-1.5 pl-1.5 pr-4 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-pink-300 hover:shadow-lg hover:shadow-pink-100 lg:col-start-1 lg:row-start-2 lg:gap-3 lg:self-start lg:py-2 lg:pl-2 lg:pr-5"
 >
-  <Icon name="star" className="h-5 w-5" />Testimoni
+  <span className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-pink-400 to-pink-600 text-white lg:h-10 lg:w-10">
+    <span className="absolute inset-0 animate-ping rounded-full bg-pink-400/40 [animation-duration:2.5s] motion-reduce:animate-none" />
+    <Icon name="star" className="relative h-4 w-4 transition-transform duration-300 group-hover:rotate-[72deg] group-hover:scale-110 lg:h-5 lg:w-5" />
+  </span>
+  <span className="flex flex-col text-left leading-tight">
+    <b className="text-sm text-[#0d0c22] lg:text-[15px]">Testimoni</b>
+    <span className="hidden text-xs text-gray-500 sm:block">Kata pelanggan kami</span>
+  </span>
+  <Icon name="right" className="h-3.5 w-3.5 text-gray-400 transition duration-300 group-hover:translate-x-1 group-hover:text-pink-500 lg:h-4 lg:w-4" />
 </Link>
       </section>
 
