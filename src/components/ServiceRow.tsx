@@ -9,8 +9,8 @@ import ZoomImage from "@/components/ZoomImage";
 const DEFAULT_WA = process.env.NEXT_PUBLIC_WA_NUMBER;
 
 export default function ServiceRow({
-  s, game, gameSlug, gameIcon, cs, csName,
-}: { s: Service; game: string; gameSlug: string; gameIcon?: string | null; cs?: string | null; csName?: string | null }) {
+  s, title, game, gameSlug, gameIcon, cs, csName,
+}: { s: Service; title?: string; game: string; gameSlug: string; gameIcon?: string | null; cs?: string | null; csName?: string | null }) {
   const ref = useRef<HTMLDialogElement>(null);
   const add = useCart((x) => x.add);
   const [qty, setQty] = useState(1);
@@ -59,7 +59,7 @@ export default function ServiceRow({
           {img && <Image src={img} alt="" fill sizes="56px" className="object-cover" />}
         </span>
         <span className="min-w-0 flex-1">
-          <b className="line-clamp-2 block font-semibold leading-snug text-[#0d0c22]">{s.name}</b>
+          <b className="line-clamp-2 block font-semibold leading-snug text-[#0d0c22]">{title ?? s.name}</b>
           <span className="mt-0.5 block text-xs text-gray-500">{s.duration ? `Estimasi ${s.duration} · ` : ""}{s.unit}</span>
           {opts.length > 0 && (
             <span className="mt-1 inline-block rounded-full bg-pink-50 px-2 py-0.5 text-[10px] font-bold text-pink-600">Ada pilihan</span>

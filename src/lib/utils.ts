@@ -17,6 +17,14 @@ export type Service = {
   price: number; unit: string; duration: string; emoji: string; includes: string[];
   image_url?: string | null;
   options?: ServiceOption[] | null;
+  category?: string | null;
+};
+
+export const catOf = (s: { category?: string | null; name: string }) =>
+  s.category?.trim() || (s.name.includes(" - ") ? s.name.split(" - ")[0].trim() : "Lainnya");
+export const shortName = (s: { category?: string | null; name: string }) => {
+  const c = catOf(s);
+  return s.name.startsWith(c + " - ") ? s.name.slice(c.length + 3) : s.name;
 };
 export type Track = {
   code: string; name: string; stage: number; progress: number; cancelled: boolean;

@@ -237,7 +237,33 @@ export async function saveService(fd: FormData): Promise<R> {
   publish();
   return { ok: true };
 }
+/* ---------- Gambar Kategori Layanan ---------- */
+export async function saveServiceCats(fd: FormData): Promise<R> {
+  await requireAdmin();
+  const slug = str(fd, "slug");
+  if (!slug) return { error: "Slug game tidak valid" };
 
+  const names = fd.getAll("sc_name").map(String);
+  const imgs = fd.getAll("sc_img").map(String);
+  const service_cat_images: Record<string, string> = {};
+
+  for (let i = 0; i < names.length; i++) {
+    const n = names[i].trim();
+    if (!n) continue;
+    const u = (imgs[i] ?? "").trim();
+    if (!urlOk(u)) return { error: "URL gambar tidak valid" };
+    if (u) service_cat_images[n] = u;
+  }
+
+  const { error } = await db
+    .from("games")
+    .update({ service_cat_images })
+    .eq("slug", slug);
+
+  if (error) return { error: error.message };
+  publish();
+  return { ok: true };
+}
 export async function addService(fd: FormData): Promise<R> {
   await requireAdmin();
   const f = serviceFields(fd);

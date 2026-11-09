@@ -6,6 +6,7 @@ export type Game = {
   badges: string[]; categories: string[]; sort: number;
   icon_url: string | null; category_images: Record<string, string> | null;
   cs_name: string | null; cs_wa: string | null;
+  service_cat_images: Record<string, string> | null;
 };
 export type Joki = {
   id: string; slug: string; game_id: string; name: string; bio: string | null;
@@ -16,6 +17,7 @@ export type GameView = Game & {
   jokiCount: number; minPrice: number | null; rating: number | null;
   reviews: number; projects: number; response: number;
   icon: string | null; categoryImages: Record<string, string>;
+  
 };
 
 export const respText = (m: number) => (m < 60 ? `${m} menit` : m === 60 ? "1 jam" : `${Math.round(m / 60)} jam`);
