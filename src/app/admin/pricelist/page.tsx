@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { supabaseAdmin as db } from "@/lib/supabase/admin";
-import { rp, catOf, shortName } from "@/lib/utils";
+import { rp, catOf, shortName, subGroups } from "@/lib/utils";
 import { Icon } from "@/components/Icons";
 import AdminShell from "@/components/admin/AdminShell";
 import SaveForm, { Submit, DeleteButton } from "@/components/admin/SaveForm";
@@ -46,10 +46,13 @@ export default async function AdminPricelist({ searchParams }: { searchParams: P
   const catImgs: Record<string, string> = g.service_cat_images ?? {};
   const activeCount = services.filter((s) => s.is_active).length;
 
+  // Daftar sub kategori yang sudah ada (untuk saran otomatis di form)
+  const allSubs = [...new Set(services.map((s) => (s.sub_category ?? "").trim()).filter(Boolean))].sort(nat) as string[];
+
   return (
     <AdminShell active="pricelist">
       <h1 className="text-3xl font-bold tracking-tight text-[#0d0c22]">Pricelist</h1>
-      <p className="mt-2 text-gray-600">Atur kategori, harga, gambar, deskripsi, dan pilihan tambahan tiap layanan.</p>
+      <p className="mt-2 text-gray-600">Atur kategori, sub kategori, harga, gambar, deskripsi, dan pilihan tambahan tiap layanan.</p>
 
       <div className="mt-5 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {games.map((x) => (
@@ -65,7 +68,10 @@ export default async function AdminPricelist({ searchParams }: { searchParams: P
       <div className={`${card} mt-4`}>
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 className="text-lg font-bold">{g.name}</h2>
-          <span className="text-xs text-gray-500">{services.length} layanan · {activeCount} aktif · {ordered.length} kategori</span>
+          <span className="text-xs text-gray-500">
+            {services.length} layanan · {activeCount} aktif · {ordered.length} kategori
+            {allSubs.length > 0 && ` · ${allSubs.length} sub kategori`}
+          </span>
         </div>
 
         {!jokis.length && (
@@ -112,34 +118,43 @@ export default async function AdminPricelist({ searchParams }: { searchParams: P
                 </summary>
 
                 <div className="px-4">
-                  {items.map((s) => (
-                    <details key={s.id}
-                      data-svc={[s.name, s.unit, s.price, s.description].filter(Boolean).join(" ").toLowerCase()}
-                      className="group border-b border-gray-100 last:border-b-0">
-                      <summary className="flex cursor-pointer list-none items-center gap-3 py-3.5 [&::-webkit-details-marker]:hidden">
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate font-semibold text-[#0d0c22]">{shortName(s)}</p>
-                          <p className="text-xs text-gray-500">
-                            {jokiName[s.joki_id] ?? "-"} · {s.duration || "-"} · {s.unit}
-                            {(s.options ?? []).length > 0 && ` · ${s.options.length} pilihan`}
-                          </p>
-                        </div>
-                        {!s.is_active && <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-bold text-gray-500">Nonaktif</span>}
-                        <span className="font-bold">{rp(s.price)}</span>
-                        <Icon name="chevron" className="h-4 w-4 transition-transform group-open:rotate-180" />
-                      </summary>
-                      <div className="pb-5 pt-1">
-                        <SaveForm action={saveService} className="grid gap-4 sm:grid-cols-2">
-                          <input type="hidden" name="id" value={s.id} />
-                          <ServiceFields s={s} jokis={jokis} />
-                          <div className="col-span-full"><Submit>Simpan layanan</Submit></div>
-                        </SaveForm>
-                        <SaveForm action={deleteService} className="mt-3">
-                          <input type="hidden" name="id" value={s.id} />
-                          <DeleteButton confirmText="Hapus layanan ini?">Hapus layanan</DeleteButton>
-                        </SaveForm>
-                      </div>
-                    </details>
+                  {subGroups(items).map(([sub, list]) => (
+                    <div key={sub || "_"}>
+                      {sub && (
+                        <p className="mt-3 border-b border-gray-100 pb-1.5 text-xs font-bold uppercase tracking-wide text-gray-400">
+                          {sub} · {list.length}
+                        </p>
+                      )}
+                      {list.map((s) => (
+                        <details key={s.id}
+                          data-svc={[s.name, s.sub_category, s.unit, s.price, s.description].filter(Boolean).join(" ").toLowerCase()}
+                          className="group border-b border-gray-100 last:border-b-0">
+                          <summary className="flex cursor-pointer list-none items-center gap-3 py-3.5 [&::-webkit-details-marker]:hidden">
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate font-semibold text-[#0d0c22]">{shortName(s)}</p>
+                              <p className="text-xs text-gray-500">
+                                {jokiName[s.joki_id] ?? "-"} · {s.duration || "-"} · {s.unit}
+                                {(s.options ?? []).length > 0 && ` · ${s.options.length} pilihan`}
+                              </p>
+                            </div>
+                            {!s.is_active && <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-bold text-gray-500">Nonaktif</span>}
+                            <span className="font-bold">{rp(s.price)}</span>
+                            <Icon name="chevron" className="h-4 w-4 transition-transform group-open:rotate-180" />
+                          </summary>
+                          <div className="pb-5 pt-1">
+                            <SaveForm action={saveService} className="grid gap-4 sm:grid-cols-2">
+                              <input type="hidden" name="id" value={s.id} />
+                              <ServiceFields s={s} jokis={jokis} subs={allSubs} />
+                              <div className="col-span-full"><Submit>Simpan layanan</Submit></div>
+                            </SaveForm>
+                            <SaveForm action={deleteService} className="mt-3">
+                              <input type="hidden" name="id" value={s.id} />
+                              <DeleteButton confirmText="Hapus layanan ini?">Hapus layanan</DeleteButton>
+                            </SaveForm>
+                          </div>
+                        </details>
+                      ))}
+                    </div>
                   ))}
                 </div>
               </details>
@@ -155,7 +170,7 @@ export default async function AdminPricelist({ searchParams }: { searchParams: P
             </summary>
             <SaveForm action={addService} resetOnOk className="mt-4 grid gap-4 sm:grid-cols-2">
               <input type="hidden" name="game_slug" value={g.slug} />
-              <ServiceFields jokis={jokis} />
+              <ServiceFields jokis={jokis} subs={allSubs} />
               <div className="col-span-full"><Submit>Tambah layanan</Submit></div>
             </SaveForm>
           </details>

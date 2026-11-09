@@ -1,8 +1,11 @@
 import ImageUpload from "@/components/admin/ImageUpload";
 import { inp, lbl } from "@/components/admin/ui";
 
-export default function ServiceFields({ s, jokis }: { s?: any; jokis: { id: string; name: string }[] }) {
+export default function ServiceFields({
+  s, jokis, subs = [],
+}: { s?: any; jokis: { id: string; name: string }[]; subs?: string[] }) {
   const rows: any[] = [...(s?.options ?? []), {}];
+  const listId = `sub-cats-${s?.id ?? "new"}`;
   return (
     <>
       <div className="sm:col-span-2">
@@ -12,6 +15,12 @@ export default function ServiceFields({ s, jokis }: { s?: any; jokis: { id: stri
       <div>
         <label className={lbl}>Nama layanan</label>
         <input name="name" defaultValue={s?.name} required className={inp} />
+      </div>
+      <div>
+        <label className={lbl}>Sub kategori (opsional)</label>
+        <input name="sub_category" list={listId} defaultValue={s?.sub_category ?? ""}
+          placeholder="mis. Rank Mythic" autoComplete="off" className={inp} />
+        <datalist id={listId}>{subs.map((x) => <option key={x} value={x} />)}</datalist>
       </div>
       <div>
         <label className={lbl}>Grup (joki)</label>
@@ -42,6 +51,7 @@ export default function ServiceFields({ s, jokis }: { s?: any; jokis: { id: stri
         <label className={lbl}>Yang termasuk (satu poin per baris)</label>
         <textarea name="includes" rows={3} defaultValue={(s?.includes ?? []).join("\n")} className={inp} />
       </div>
+
 
       <div className="sm:col-span-2">
         <p className="text-sm font-bold text-[#0d0c22]">Pilihan tambahan untuk pelanggan</p>

@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { loadCatalog } from "@/lib/catalog";
-import { catOf, shortName, rp, type Service } from "@/lib/utils";
+import { catOf, shortName, rp, subGroups, type Service } from "@/lib/utils";
 import { GAME_ICONS } from "@/lib/game-icons";
 import { Icon } from "@/components/Icons";
 import Terms from "@/components/Terms";
@@ -10,6 +10,7 @@ import GameAvatar from "@/components/GameAvatar";
 import PageNav from "@/components/PageNav";
 import ZoomImage from "@/components/ZoomImage";
 import ServiceRow from "@/components/ServiceRow";
+import { LinkSpinner, LinkFade } from "@/components/LinkPending";
 
 const nat = (a: string, b: string) => a.localeCompare(b, "id", { numeric: true });
 
@@ -34,6 +35,7 @@ export default async function GamePage({
   // Satu kategori saja: langsung tampilkan isinya
   const active = k && groups.has(k) ? k : cats.length === 1 ? cats[0][0] : null;
   const items = active ? groups.get(active)! : [];
+  const subList = subGroups(items);
 
   const gameIcon = g.icon ?? GAME_ICONS[g.slug] ?? null;
   const catImgs = g.service_cat_images ?? {};
@@ -111,15 +113,19 @@ export default async function GamePage({
               return (
                 <li key={name}>
                   <Link href={`/game/${g.slug}?k=${encodeURIComponent(name)}`} scroll
-                    className="flex items-center gap-4 p-3 transition hover:bg-gray-50 sm:p-4">
-                    <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-gray-100">
-                      {img && <Image src={img} alt="" fill sizes="64px" className="object-cover" />}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <b className="block truncate text-lg text-[#0d0c22]">{name}</b>
-                      <span className="text-sm text-gray-500">{list.length} layanan · mulai {rp(min)}</span>
-                    </span>
-                    <Icon name="right" className="h-5 w-5 shrink-0 text-gray-400" />
+                    className="flex items-center gap-4 p-3 transition hover:bg-gray-50 active:bg-gray-100 sm:p-4">
+                    <LinkFade className="flex min-w-0 flex-1 items-center gap-4">
+                      <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-gray-100">
+                        {img && <Image src={img} alt="" fill sizes="64px" className="object-cover" />}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <b className="block truncate text-lg text-[#0d0c22]">{name}</b>
+                        <span className="text-sm text-gray-500">{list.length} layanan · mulai {rp(min)}</span>
+                      </span>
+                    </LinkFade>
+                    <LinkSpinner>
+                      <Icon name="right" className="h-5 w-5 shrink-0 text-gray-400" />
+                    </LinkSpinner>
                   </Link>
                 </li>
               );
@@ -128,23 +134,35 @@ export default async function GamePage({
         </section>
       )}
 
-      {/* Isi kategori */}
+      {/* Isi kategori (dikelompokkan per sub kategori) */}
       {active && (
         <section className="mt-6">
           {cats.length > 1 && (
             <Link href={`/game/${g.slug}`} className="mb-3 inline-flex items-center gap-1.5 text-sm font-semibold text-gray-500 hover:text-black">
-              <Icon name="back" className="h-4 w-4" />Semua kategori
+              <LinkSpinner><Icon name="back" className="h-4 w-4" /></LinkSpinner>Semua kategori
             </Link>
           )}
           <h2 className="mb-3 text-xl font-bold text-[#0d0c22]">
             {active} <span className="text-sm font-medium text-gray-400">({items.length})</span>
           </h2>
-          <ul className="divide-y divide-gray-100 overflow-hidden rounded-3xl border border-gray-200 bg-white">
-            {items.map((s) => (
-              <ServiceRow key={s.id} s={s} title={shortName(s)} game={g.name} gameSlug={g.slug}
-                gameIcon={catImgs[active] || gameIcon} cs={g.cs_wa} csName={g.cs_name} />
+
+          <div className="space-y-5">
+            {subList.map(([sub, list]) => (
+              <div key={sub || "_"}>
+                {sub && (
+                  <h3 className="mb-2 flex items-center gap-2 text-sm font-bold text-[#0d0c22]">
+                    {sub} <span className="text-xs font-medium text-gray-400">({list.length})</span>
+                  </h3>
+                )}
+                <ul className="divide-y divide-gray-100 overflow-hidden rounded-3xl border border-gray-200 bg-white">
+                  {list.map((s) => (
+                    <ServiceRow key={s.id} s={s} title={shortName(s)} game={g.name} gameSlug={g.slug}
+                      gameIcon={catImgs[active] || gameIcon} cs={g.cs_wa} csName={g.cs_name} />
+                  ))}
+                </ul>
+              </div>
             ))}
-          </ul>
+          </div>
         </section>
       )}
     </div>

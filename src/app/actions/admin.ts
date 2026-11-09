@@ -21,6 +21,7 @@ const waNum = (v: string) => {
   const d = v.replace(/\D/g, "");
   return d.startsWith("0") ? "62" + d.slice(1) : d;
 };
+
 /* ---------- Auth ---------- */
 export async function signIn(fd: FormData): Promise<{ error: string } | undefined> {
   const sb = await createClient();
@@ -78,7 +79,7 @@ export async function saveGame(fd: FormData): Promise<R> {
   const icon = str(fd, "icon_url");
   if (!name) return { error: "Nama game wajib diisi" };
   if (!urlOk(icon)) return { error: "URL gambar tidak valid" };
-    const cs_wa = waNum(str(fd, "cs_wa"));
+  const cs_wa = waNum(str(fd, "cs_wa"));
   if (cs_wa && !/^\d{9,15}$/.test(cs_wa)) return { error: "Nomor WhatsApp CS tidak valid" };
   const { error } = await db.from("games").update({
     name,
@@ -94,7 +95,6 @@ export async function saveGame(fd: FormData): Promise<R> {
   return { ok: true };
 }
 
-
 export async function deleteGame(fd: FormData): Promise<R> {
   await requireAdmin();
   const id = str(fd, "id");
@@ -104,7 +104,6 @@ export async function deleteGame(fd: FormData): Promise<R> {
   if (error) return { error: error.message };
   publish();
   redirect("/admin/games");
-  
 }
 
 export async function saveCategories(fd: FormData): Promise<R> {
@@ -222,6 +221,7 @@ function serviceFields(fd: FormData) {
       unit: str(fd, "unit") || "per paket",
       duration: str(fd, "duration") || null,
       joki_id: str(fd, "joki_id"),
+      sub_category: str(fd, "sub_category") || null,
       includes: lines(fd.get("includes")),
       is_active: fd.get("is_active") === "on",
     },
@@ -237,6 +237,7 @@ export async function saveService(fd: FormData): Promise<R> {
   publish();
   return { ok: true };
 }
+
 /* ---------- Gambar Kategori Layanan ---------- */
 export async function saveServiceCats(fd: FormData): Promise<R> {
   await requireAdmin();
@@ -264,6 +265,7 @@ export async function saveServiceCats(fd: FormData): Promise<R> {
   publish();
   return { ok: true };
 }
+
 export async function addService(fd: FormData): Promise<R> {
   await requireAdmin();
   const f = serviceFields(fd);

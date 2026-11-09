@@ -18,6 +18,7 @@ export type Service = {
   image_url?: string | null;
   options?: ServiceOption[] | null;
   category?: string | null;
+  sub_category?: string | null;
 };
 
 export const catOf = (s: { category?: string | null; name: string }) =>
@@ -26,6 +27,21 @@ export const shortName = (s: { category?: string | null; name: string }) => {
   const c = catOf(s);
   return s.name.startsWith(c + " - ") ? s.name.slice(c.length + 3) : s.name;
 };
+
+// Kelompokkan layanan per sub kategori. Tanpa sub kategori (kosong) selalu di atas.
+export function subGroups<T extends { sub_category?: string | null }>(
+  arr: T[]
+): [string, T[]][] {
+  const m = new Map<string, T[]>();
+  arr.forEach((s) => {
+    const k = s.sub_category?.trim() ?? "";
+    m.set(k, [...(m.get(k) ?? []), s]);
+  });
+  return [...m.entries()].sort(([a], [b]) =>
+    a === "" ? -1 : b === "" ? 1 : a.localeCompare(b, "id", { numeric: true })
+  );
+}
+
 export type Track = {
   code: string; name: string; stage: number; progress: number; cancelled: boolean;
   pay_status: "unpaid" | "proof" | "paid" | "rejected"; total_pay: number; deadline: string;
