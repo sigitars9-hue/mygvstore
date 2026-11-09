@@ -5,6 +5,7 @@ import { signOut } from "@/app/actions/admin";
 const TABS = [
   ["home", "/admin", "Ringkasan", "grid"],
   ["games", "/admin/games", "Game & Harga", "list"],
+  ["pricelist", "/admin/pricelist", "Pricelist", "coin"],
   ["banners", "/admin/banners", "Banner", "image"],
   ["testimoni", "/admin/testimoni", "Testimoni", "star"],
   ["terms", "/admin/terms", "S&K", "receipt"],

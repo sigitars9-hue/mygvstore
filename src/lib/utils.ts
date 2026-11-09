@@ -4,10 +4,19 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+export type ServiceOption = {
+  label: string;
+  type: "choice" | "text";
+  required: boolean;
+  choices?: string[];
+  hint?: string;
+};
 
 export type Service = {
   id: string; slug: string; game: string; name: string; description: string;
   price: number; unit: string; duration: string; emoji: string; includes: string[];
+  image_url?: string | null;
+  options?: ServiceOption[] | null;
 };
 export type Track = {
   code: string; name: string; stage: number; progress: number; cancelled: boolean;

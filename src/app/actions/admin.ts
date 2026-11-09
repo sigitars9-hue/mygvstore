@@ -187,13 +187,37 @@ export async function deleteJoki(fd: FormData): Promise<R> {
 function serviceFields(fd: FormData) {
   const name = str(fd, "name");
   const price = Math.round(Number(fd.get("price")));
+  const image = str(fd, "image_url");
   if (!name) return { error: "Nama layanan wajib diisi" } as const;
   if (!Number.isFinite(price) || price < 0) return { error: "Harga tidak valid" } as const;
   if (!str(fd, "joki_id")) return { error: "Pilih joki" } as const;
+  if (!urlOk(image)) return { error: "URL gambar tidak valid" } as const;
+
+  const labels = fd.getAll("opt_label").map(String);
+  const types = fd.getAll("opt_type").map(String);
+  const extras = fd.getAll("opt_extra").map(String);
+  const reqs = fd.getAll("opt_req").map(String);
+  const options: { label: string; type: "choice" | "text"; required: boolean; choices?: string[]; hint?: string }[] = [];
+  for (let i = 0; i < labels.length; i++) {
+    const label = labels[i].trim();
+    if (!label) continue; // label kosong = hapus
+    const extra = (extras[i] ?? "").trim();
+    const required = reqs[i] !== "0";
+    if (types[i] === "text") {
+      options.push({ label, type: "text", required, hint: extra });
+    } else {
+      const choices = extra.split(",").map((s) => s.trim()).filter(Boolean);
+      if (choices.length < 2) return { error: `Pilihan "${label}" minimal 2 opsi, pisahkan dengan koma` } as const;
+      options.push({ label, type: "choice", required, choices });
+    }
+  }
+
   return {
     values: {
       name,
       price,
+      image_url: image || null,
+      options,
       description: str(fd, "description") || null,
       unit: str(fd, "unit") || "per paket",
       duration: str(fd, "duration") || null,

@@ -138,56 +138,17 @@ export default async function AdminGame({ params }: { params: Promise<{ slug: st
       {/* Joki */}
       <JokiSection gameSlug={g.slug} jokis={jokis} />
 
-      {/* Daftar harga */}
-      <div className={`${card} mt-4`}>
-        <h2 className="text-lg font-bold">Daftar harga</h2>
-        {!jokis.length && (
-          <p className="mt-3 flex items-center gap-2 rounded-2xl bg-amber-50 p-3.5 text-sm text-amber-800">
-            <Icon name="alert" className="h-4 w-4 shrink-0" />Tambahkan joki dulu di atas, baru layanan bisa dibuat.
-          </p>
-        )}
-
-        <div className="mt-2">
-          {services.map((s) => (
-            <details key={s.id} className="group border-b border-gray-100">
-              <summary className="flex cursor-pointer list-none items-center gap-3 py-3.5 [&::-webkit-details-marker]:hidden">
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold text-[#0d0c22]">{s.name}</p>
-                  <p className="text-xs text-gray-500">Joki {jokiName[s.joki_id] ?? "-"} · {s.duration || "-"} · {s.unit}</p>
-                </div>
-                {!s.is_active && <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-bold text-gray-500">Nonaktif</span>}
-                <span className="font-bold">{rp(s.price)}</span>
-                <Icon name="chevron" className="h-4 w-4 transition-transform group-open:rotate-180" />
-              </summary>
-              <div className="pb-5 pt-1">
-                <SaveForm action={saveService} className="grid gap-4 sm:grid-cols-2">
-                  <input type="hidden" name="id" value={s.id} />
-                  {serviceFields(s)}
-                  <div className="col-span-full"><Submit>Simpan layanan</Submit></div>
-                </SaveForm>
-                <SaveForm action={deleteService} className="mt-3">
-                  <input type="hidden" name="id" value={s.id} />
-                  <DeleteButton confirmText="Hapus layanan ini?">Hapus layanan</DeleteButton>
-                </SaveForm>
-              </div>
-            </details>
-          ))}
-          {!services.length && jokis.length > 0 && <p className="py-4 text-sm text-gray-500">Belum ada layanan.</p>}
-        </div>
-
-        {jokis.length > 0 && (
-          <details className="mt-4 rounded-2xl border border-dashed border-gray-300 p-4">
-            <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-bold [&::-webkit-details-marker]:hidden">
-              <Icon name="plus" className="h-4 w-4" />Tambah layanan
-            </summary>
-            <SaveForm action={addService} resetOnOk className="mt-4 grid gap-4 sm:grid-cols-2">
-              <input type="hidden" name="game_slug" value={g.slug} />
-              {serviceFields()}
-              <div className="col-span-full"><Submit>Tambah layanan</Submit></div>
-            </SaveForm>
-          </details>
-        )}
-      </div>
+ <Link
+  href={`/admin/pricelist?game=${g.slug}`}
+  className={`${card} mt-4 flex items-center gap-4 transition hover:shadow-xl`}
+>
+  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gray-100"><Icon name="coin" /></span>
+  <span className="min-w-0 flex-1">
+    <b className="block text-lg">Daftar harga</b>
+    <span className="text-sm text-gray-600">{services.length} layanan. Ubah harga, gambar, dan pilihan di tab Pricelist.</span>
+  </span>
+  <Icon name="right" className="h-5 w-5 text-gray-400" />
+</Link>
 
       <SaveForm action={deleteGame} className="mt-8 flex flex-wrap items-center gap-3">
         <input type="hidden" name="id" value={g.id} />

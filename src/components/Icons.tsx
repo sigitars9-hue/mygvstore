@@ -32,6 +32,9 @@ const P = {
   upload: <><path d="M12 16V4M7 9l5-5 5 5" /><path d="M5 20h14" /></>,
   logout: <><path d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4" /><path d="m16 8 4 4-4 4M20 12H9" /></>,
   external: <><path d="M14 4h6v6M20 4l-9 9" /><path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4" /></>,
+  close: <path d="M6 6l12 12M18 6 6 18" />,
+  minus: <path d="M5 12h14" />,
+  home: <><path d="M3 11 12 4l9 7" /><path d="M5 10v10h14V10M10 20v-5h4v5" /></>,
 } satisfies Record<string, ReactNode>;
 
 export type IconName = keyof typeof P;

@@ -124,7 +124,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<SP>
         <input
           name="q"
           defaultValue={q}
-          placeholder="Cari game, CS, layanan, atau harga (mis. imy, daily, <30k)"
+          placeholder="Cari semua disini"
           className="h-11 min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-gray-500 sm:text-lg"
         />
         <button aria-label="Cari" className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-pink-500 text-white hover:bg-pink-600"><Icon name="search" /></button>
