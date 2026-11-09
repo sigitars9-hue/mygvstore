@@ -39,7 +39,9 @@ export default function SearchBox({ initial = "" }: { initial?: string }) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
-
+useEffect(() => {
+    if (document.activeElement !== inputRef.current) setValue(initial);
+  }, [initial]);
   return (
     <div className="group relative rounded-full border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:border-gray-300 focus-within:border-[#0d0c22] focus-within:shadow-[0_6px_20px_-10px_rgba(13,12,34,0.35)]">
       <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-gray-400 transition-colors group-focus-within:text-[#0d0c22]">
