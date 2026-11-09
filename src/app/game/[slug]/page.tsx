@@ -96,7 +96,7 @@ export default async function GamePage({ params }: { params: Promise<{ slug: str
           <h2 className="mb-3 text-lg font-bold text-[#0d0c22]">Daftar harga</h2>
           <ul className="divide-y divide-gray-100 overflow-hidden rounded-3xl border border-gray-200 bg-white">
             {rows.map((s) => (
-              <ServiceRow key={s.id} s={s} game={g.name} gameIcon={gameIcon} cs={g.cs_wa} csName={g.cs_name} />
+              <ServiceRow key={s.id} s={s} game={g.name} gameSlug={g.slug} gameIcon={gameIcon} cs={g.cs_wa} csName={g.cs_name} />
             ))}
           </ul>
         </section>

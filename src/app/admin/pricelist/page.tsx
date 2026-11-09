@@ -6,8 +6,11 @@ import { Icon } from "@/components/Icons";
 import AdminShell from "@/components/admin/AdminShell";
 import SaveForm, { Submit, DeleteButton } from "@/components/admin/SaveForm";
 import ServiceFields from "@/components/admin/ServiceFields";
+import ListFilter from "@/components/admin/ListFilter";
 import { saveService, addService, deleteService } from "@/app/actions/admin";
 import { card } from "@/components/admin/ui";
+
+const groupOf = (name: string) => (name.includes(" - ") ? name.split(" - ")[0].trim() : "Lainnya");
 
 export default async function AdminPricelist({ searchParams }: { searchParams: Promise<{ game?: string }> }) {
   const { game } = await searchParams;
@@ -31,7 +34,15 @@ export default async function AdminPricelist({ searchParams }: { searchParams: P
   const services: any[] = jokis.length
     ? (await db.from("services").select("*").in("joki_id", jokis.map((j) => j.id))).data ?? []
     : [];
-  services.sort((a, b) => a.name.localeCompare(b.name, "id") || a.price - b.price);
+
+  const nat = (a: string, b: string) => a.localeCompare(b, "id", { numeric: true });
+  const groups = new Map<string, any[]>();
+  [...services].sort((a, b) => nat(a.name, b.name) || a.price - b.price).forEach((s) => {
+    const k = groupOf(s.name);
+    groups.set(k, [...(groups.get(k) ?? []), s]);
+  });
+  const ordered = [...groups.entries()].sort(([a], [b]) => (a === "Lainnya" ? 1 : b === "Lainnya" ? -1 : nat(a, b)));
+  const activeCount = services.filter((s) => s.is_active).length;
 
   return (
     <AdminShell active="pricelist">
@@ -52,7 +63,11 @@ export default async function AdminPricelist({ searchParams }: { searchParams: P
       </div>
 
       <div className={`${card} mt-4`}>
-        <h2 className="text-lg font-bold">{g.name}</h2>
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="text-lg font-bold">{g.name}</h2>
+          <span className="text-xs text-gray-500">{services.length} layanan · {activeCount} aktif · {ordered.length} grup</span>
+        </div>
+
         {!jokis.length && (
           <p className="mt-3 flex items-center gap-2 rounded-2xl bg-amber-50 p-3.5 text-sm text-amber-800">
             <Icon name="alert" className="h-4 w-4 shrink-0" />
@@ -60,34 +75,60 @@ export default async function AdminPricelist({ searchParams }: { searchParams: P
           </p>
         )}
 
-        <div className="mt-2">
-          {services.map((s) => (
-            <details key={s.id} className="group border-b border-gray-100">
-              <summary className="flex cursor-pointer list-none items-center gap-3 py-3.5 [&::-webkit-details-marker]:hidden">
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold text-[#0d0c22]">{s.name}</p>
-                  <p className="text-xs text-gray-500">
-                    {jokiName[s.joki_id] ?? "-"} · {s.duration || "-"} · {s.unit}
-                    {(s.options ?? []).length > 0 && ` · ${s.options.length} pilihan`}
-                  </p>
+        {services.length > 6 && <ListFilter targetId="svc-list" />}
+
+        <div id="svc-list" className="mt-4 space-y-3">
+          {ordered.map(([name, items]) => {
+            const prices = items.map((s) => s.price);
+            const min = Math.min(...prices), max = Math.max(...prices);
+            return (
+              <details key={name} data-group className="group/g overflow-hidden rounded-2xl border border-gray-200">
+                <summary className="flex cursor-pointer list-none items-center gap-3 bg-gray-50 px-4 py-3 [&::-webkit-details-marker]:hidden">
+                  <b className="flex-1 text-[#0d0c22]">{name}</b>
+                  <span className="text-xs text-gray-500">
+                    {items.length} item · {min === max ? rp(min) : `${rp(min)} – ${rp(max)}`}
+                  </span>
+                  <Icon name="chevron" className="h-4 w-4 transition-transform group-open/g:rotate-180" />
+                </summary>
+
+                <div className="px-4">
+                  {items.map((s) => (
+                    <details
+                      key={s.id}
+                      data-svc={[s.name, s.unit, s.price, s.description].filter(Boolean).join(" ").toLowerCase()}
+                      className="group border-b border-gray-100 last:border-b-0"
+                    >
+                      <summary className="flex cursor-pointer list-none items-center gap-3 py-3.5 [&::-webkit-details-marker]:hidden">
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate font-semibold text-[#0d0c22]">
+                            {name !== "Lainnya" ? s.name.replace(`${name} - `, "") : s.name}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {jokiName[s.joki_id] ?? "-"} · {s.duration || "-"} · {s.unit}
+                            {(s.options ?? []).length > 0 && ` · ${s.options.length} pilihan`}
+                          </p>
+                        </div>
+                        {!s.is_active && <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-bold text-gray-500">Nonaktif</span>}
+                        <span className="font-bold">{rp(s.price)}</span>
+                        <Icon name="chevron" className="h-4 w-4 transition-transform group-open:rotate-180" />
+                      </summary>
+                      <div className="pb-5 pt-1">
+                        <SaveForm action={saveService} className="grid gap-4 sm:grid-cols-2">
+                          <input type="hidden" name="id" value={s.id} />
+                          <ServiceFields s={s} jokis={jokis} />
+                          <div className="col-span-full"><Submit>Simpan layanan</Submit></div>
+                        </SaveForm>
+                        <SaveForm action={deleteService} className="mt-3">
+                          <input type="hidden" name="id" value={s.id} />
+                          <DeleteButton confirmText="Hapus layanan ini?">Hapus layanan</DeleteButton>
+                        </SaveForm>
+                      </div>
+                    </details>
+                  ))}
                 </div>
-                {!s.is_active && <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-bold text-gray-500">Nonaktif</span>}
-                <span className="font-bold">{rp(s.price)}</span>
-                <Icon name="chevron" className="h-4 w-4 transition-transform group-open:rotate-180" />
-              </summary>
-              <div className="pb-5 pt-1">
-                <SaveForm action={saveService} className="grid gap-4 sm:grid-cols-2">
-                  <input type="hidden" name="id" value={s.id} />
-                  <ServiceFields s={s} jokis={jokis} />
-                  <div className="col-span-full"><Submit>Simpan layanan</Submit></div>
-                </SaveForm>
-                <SaveForm action={deleteService} className="mt-3">
-                  <input type="hidden" name="id" value={s.id} />
-                  <DeleteButton confirmText="Hapus layanan ini?">Hapus layanan</DeleteButton>
-                </SaveForm>
-              </div>
-            </details>
-          ))}
+              </details>
+            );
+          })}
           {!services.length && jokis.length > 0 && <p className="py-4 text-sm text-gray-500">Belum ada layanan.</p>}
         </div>
 
@@ -96,6 +137,9 @@ export default async function AdminPricelist({ searchParams }: { searchParams: P
             <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-bold [&::-webkit-details-marker]:hidden">
               <Icon name="plus" className="h-4 w-4" />Tambah layanan
             </summary>
+            <p className="mt-3 rounded-xl bg-gray-50 p-3 text-xs text-gray-600">
+              Tulis nama dengan format <b>Kategori - Nama layanan</b> (mis. <i>Explore - Miguel District</i>) supaya otomatis masuk grup yang sama.
+            </p>
             <SaveForm action={addService} resetOnOk className="mt-4 grid gap-4 sm:grid-cols-2">
               <input type="hidden" name="game_slug" value={g.slug} />
               <ServiceFields jokis={jokis} />

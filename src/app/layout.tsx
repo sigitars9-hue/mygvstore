@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Mona_Sans } from "next/font/google";
 import Header from "@/components/Header";
+import CartBar from "@/components/CartBar";
 
 const mona = Mona_Sans({
   subsets: ["latin"],
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 <body className={`${mona.className} bg-white text-gray-900 antialiased`}>
   <Header />
   <main className="mx-auto max-w-7xl p-5">{children}</main>
+<CartBar />
 </body>
     </html>
   );
