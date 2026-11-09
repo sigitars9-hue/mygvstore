@@ -41,8 +41,8 @@ export default function SearchBox({ initial = "" }: { initial?: string }) {
   }, []);
 
   return (
-    <div className="group relative rounded-full border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:border-gray-300 focus-within:border-[#0d0c22] focus-within:shadow-[0_10px_30px_-12px_rgba(13,12,34,0.35)]">
-      <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 transition-colors group-focus-within:text-[#0d0c22]">
+    <div className="group relative rounded-full border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:border-gray-300 focus-within:border-[#0d0c22] focus-within:shadow-[0_6px_20px_-10px_rgba(13,12,34,0.35)]">
+      <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-gray-400 transition-colors group-focus-within:text-[#0d0c22]">
         {pending ? (
           <span className="block h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-[#0d0c22]" />
         ) : (
@@ -58,7 +58,8 @@ export default function SearchBox({ initial = "" }: { initial?: string }) {
         onKeyDown={(e) => { if (e.key === "Escape") setValue(""); }}
         placeholder="Cari jokimu"
         enterKeyHint="search"
-        className="w-full rounded-full bg-transparent py-3 pl-11 pr-12 text-sm font-medium text-[#0d0c22] outline-none placeholder:text-gray-400 [&::-webkit-search-cancel-button]:hidden"
+        autoComplete="off"
+        className="w-full rounded-full bg-transparent py-3 pl-11 pr-12 text-base font-medium text-[#0d0c22] outline-none placeholder:text-gray-400 sm:text-sm [&::-webkit-search-cancel-button]:hidden"
       />
 
       {value ? (
@@ -66,12 +67,12 @@ export default function SearchBox({ initial = "" }: { initial?: string }) {
           type="button"
           onClick={() => { setValue(""); inputRef.current?.focus(); }}
           aria-label="Hapus pencarian"
-          className="animate-pop-in absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition hover:rotate-90 hover:bg-gray-200 hover:text-black active:scale-90"
+          className="animate-pop-in absolute inset-y-0 right-2.5 my-auto flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition-colors hover:bg-gray-200 hover:text-black active:scale-90"
         >
-          <Icon name="close" className="h-3.5 w-3.5" />
+          <Icon name="close" className="h-4 w-4" />
         </button>
       ) : (
-        <kbd className="pointer-events-none absolute right-4 top-1/2 hidden -translate-y-1/2 rounded-md border border-gray-200 px-1.5 text-[10px] font-bold text-gray-400 sm:block">
+        <kbd className="pointer-events-none absolute inset-y-0 right-4 my-auto hidden h-5 items-center rounded-md border border-gray-200 px-1.5 text-[10px] font-bold text-gray-400 sm:flex">
           /
         </kbd>
       )}
