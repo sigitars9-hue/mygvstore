@@ -132,6 +132,58 @@
 /* ===== Efek gerak JokiKu ===== */
 @keyframes fade-up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 .fade-up { animation: fade-up .6s cubic-bezier(.2,.7,.2,1) both; animation-delay: var(--d, 0s); }
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(-50%) scale(0.6); }
+  to   { opacity: 1; transform: translateY(-50%) scale(1); }
+}
+.animate-fade-up {
+  animation: fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+.animate-pop-in { animation: pop-in 0.18s ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up, .animate-pop-in { animation: none; }
+}
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to   { transform: none; }
+}
+@keyframes dialog-pop {
+  from { opacity: 0; transform: scale(0.95) translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}
+@keyframes bump {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
+/* Dialog: bottom sheet di mobile, pop di desktop */
+dialog[open].sheet { animation: sheet-up 0.35s cubic-bezier(0.22, 1, 0.36, 1) both; }
+dialog[open].sheet::backdrop { animation: fade-in 0.25s ease-out both; }
+dialog[open].zoom { animation: dialog-pop 0.28s cubic-bezier(0.22, 1, 0.36, 1) both; }
+dialog[open].zoom::backdrop { animation: fade-in 0.25s ease-out both; }
+@media (min-width: 640px) {
+  dialog[open].sheet { animation: dialog-pop 0.28s cubic-bezier(0.22, 1, 0.36, 1) both; }
+}
+
+.animate-shake { animation: shake 0.4s ease-in-out; }
+.animate-bump { animation: bump 0.25s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  dialog[open].sheet, dialog[open].zoom, .animate-shake, .animate-bump { animation: none; }
+}
 
 .reveal { opacity: 0; transform: translateY(18px);
   transition: opacity .6s cubic-bezier(.2,.7,.2,1), transform .6s cubic-bezier(.2,.7,.2,1);
