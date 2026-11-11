@@ -10,6 +10,8 @@ import ImageUpload from "@/components/admin/ImageUpload";
 import ListFilter from "@/components/admin/ListFilter";
 import { saveService, addService, deleteService, saveServiceCats } from "@/app/actions/admin";
 import { card, lbl } from "@/components/admin/ui";
+import { PageHeader, stagger } from "@/components/admin/AdminKit";
+import { ServicePreview } from "@/components/admin/FormPreview";
 
 const nat = (a: string, b: string) => a.localeCompare(b, "id", { numeric: true });
 
@@ -24,11 +26,11 @@ export default async function AdminPricelist({ searchParams }: { searchParams: P
   if (!g) {
     return (
       <AdminShell active="pricelist">
-        <p className="text-gray-600">Belum ada game. Tambahkan dulu di tab Game & Harga.</p>
+        <PageHeader title="Pricelist" desc="Atur kategori, sub kategori, harga, gambar, deskripsi, dan pilihan tambahan tiap layanan." />
+        <p className="mt-6 text-gray-600">Belum ada game. Tambahkan dulu di tab Game & Harga.</p>
       </AdminShell>
     );
   }
-
   const { data: jk } = await db.from("jokis").select("id,name").eq("game_id", g.id).order("name");
   const jokis = jk ?? [];
   const jokiName: Record<string, string> = Object.fromEntries(jokis.map((j) => [j.id, j.name]));
@@ -51,8 +53,7 @@ export default async function AdminPricelist({ searchParams }: { searchParams: P
 
   return (
     <AdminShell active="pricelist">
-      <h1 className="text-3xl font-bold tracking-tight text-[#0d0c22]">Pricelist</h1>
-      <p className="mt-2 text-gray-600">Atur kategori, sub kategori, harga, gambar, deskripsi, dan pilihan tambahan tiap layanan.</p>
+    <PageHeader title="Pricelist" desc="Atur kategori, sub kategori, harga, gambar, deskripsi, dan pilihan tambahan tiap layanan." />
 
       <div className="mt-5 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {games.map((x) => (
@@ -144,8 +145,10 @@ export default async function AdminPricelist({ searchParams }: { searchParams: P
                           <div className="pb-5 pt-1">
                             <SaveForm action={saveService} className="grid gap-4 sm:grid-cols-2">
                               <input type="hidden" name="id" value={s.id} />
-                              <ServiceFields s={s} jokis={jokis} subs={allSubs} />
-                              <div className="col-span-full"><Submit>Simpan layanan</Submit></div>
+                             <ServiceFields s={s} jokis={jokis} subs={allSubs} />
+<ServicePreview />
+<div className="col-span-full"><Submit>Simpan layanan</Submit></div>
+                    
                             </SaveForm>
                             <SaveForm action={deleteService} className="mt-3">
                               <input type="hidden" name="id" value={s.id} />
@@ -170,8 +173,10 @@ export default async function AdminPricelist({ searchParams }: { searchParams: P
             </summary>
             <SaveForm action={addService} resetOnOk className="mt-4 grid gap-4 sm:grid-cols-2">
               <input type="hidden" name="game_slug" value={g.slug} />
-              <ServiceFields jokis={jokis} subs={allSubs} />
-              <div className="col-span-full"><Submit>Tambah layanan</Submit></div>
+<ServiceFields jokis={jokis} subs={allSubs} />
+<ServicePreview />
+<div className="col-span-full"><Submit>Tambah layanan</Submit></div>
+              
             </SaveForm>
           </details>
         )}

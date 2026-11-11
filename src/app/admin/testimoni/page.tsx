@@ -2,6 +2,8 @@ import { requireAdmin } from "@/lib/auth";
 import { supabaseAdmin as db } from "@/lib/supabase/admin";
 import AdminShell from "@/components/admin/AdminShell";
 import SaveForm, { Submit, DeleteButton } from "@/components/admin/SaveForm";
+import { TestiPreview } from "@/components/admin/FormPreview";
+import { PageHeader, stagger } from "@/components/admin/AdminKit";
 import { addTestimonial, saveTestimonial, deleteTestimonial } from "@/app/actions/admin";
 import { inp, card, lbl } from "@/components/admin/ui";
 
@@ -31,21 +33,22 @@ export default async function AdminTestimoni() {
 
   return (
     <AdminShell active="testimoni">
-      <h1 className="text-3xl font-bold tracking-tight text-[#0d0c22]">Testimoni</h1>
-      <p className="mt-2 text-gray-600">Tampil di halaman /testimoni. Minta izin pemilik komentar sebelum memuatnya.</p>
+      <PageHeader title="Testimoni" desc="Tampil di halaman /testimoni. Minta izin pemilik komentar sebelum memuatnya." />
 
-      <SaveForm action={addTestimonial} resetOnOk className={`${card} mt-6 grid gap-4 sm:grid-cols-2`}>
+      <SaveForm action={addTestimonial} resetOnOk className={`${card} animate-fade-up mt-6 grid gap-4 sm:grid-cols-2`}>
         <h2 className="col-span-full text-lg font-bold">Tambah testimoni</h2>
         {fields()}
+        <TestiPreview />
         <div className="col-span-full"><Submit>Tambah</Submit></div>
       </SaveForm>
 
       <div className="mt-4 space-y-4">
-        {(data ?? []).map((t) => (
-          <div key={t.id} className={card}>
+        {(data ?? []).map((t, i) => (
+          <div key={t.id} style={stagger(i)} className={`${card} animate-fade-up transition hover:shadow-lg`}>
             <SaveForm action={saveTestimonial} className="grid gap-4 sm:grid-cols-2">
               <input type="hidden" name="id" value={t.id} />
               {fields(t)}
+              <TestiPreview />
               <div className="col-span-full"><Submit>Simpan</Submit></div>
             </SaveForm>
             <SaveForm action={deleteTestimonial} className="mt-3">

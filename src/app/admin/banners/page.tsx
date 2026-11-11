@@ -3,6 +3,8 @@ import { supabaseAdmin as db } from "@/lib/supabase/admin";
 import AdminShell from "@/components/admin/AdminShell";
 import SaveForm, { Submit, DeleteButton } from "@/components/admin/SaveForm";
 import ImageUpload from "@/components/admin/ImageUpload";
+import { BannerPreview } from "@/components/admin/FormPreview";
+import { PageHeader, stagger } from "@/components/admin/AdminKit";
 import { addBanner, saveBanner, deleteBanner } from "@/app/actions/admin";
 import { inp, card, lbl } from "@/components/admin/ui";
 
@@ -34,25 +36,26 @@ export default async function AdminBanners() {
 
   return (
     <AdminShell active="banners">
-      <h1 className="text-3xl font-bold tracking-tight text-[#0d0c22]">Banner</h1>
-      <p className="mt-2 text-gray-600">Gunakan rasio 1376×768 supaya tidak terpotong. Gambar dikompres otomatis ke WebP.</p>
+      <PageHeader title="Banner" desc="Gunakan rasio 1376×768 supaya tidak terpotong. Gambar dikompres otomatis ke WebP." />
 
-      <SaveForm action={addBanner} resetOnOk className={`${card} mt-6 grid gap-6 md:grid-cols-2`}>
+      <SaveForm action={addBanner} resetOnOk className={`${card} animate-fade-up mt-6 grid gap-6 md:grid-cols-2`}>
         <div>
           <h2 className="mb-3 text-lg font-bold">Tambah banner</h2>
           <ImageUpload name="image_url" folder="banner" shape="wide" />
         </div>
         {fields()}
+        <BannerPreview />
         <div className="col-span-full"><Submit>Tambah banner</Submit></div>
       </SaveForm>
 
       <div className="mt-4 space-y-4">
-        {(banners ?? []).map((b) => (
-          <div key={b.id} className={card}>
+        {(banners ?? []).map((b, i) => (
+          <div key={b.id} style={stagger(i)} className={`${card} animate-fade-up transition hover:shadow-lg`}>
             <SaveForm action={saveBanner} className="grid gap-6 md:grid-cols-2">
               <input type="hidden" name="id" value={b.id} />
               <ImageUpload name="image_url" folder="banner" shape="wide" defaultValue={b.image_url} />
               {fields(b)}
+              <BannerPreview />
               <div className="col-span-full"><Submit>Simpan</Submit></div>
             </SaveForm>
             <SaveForm action={deleteBanner} className="mt-3">

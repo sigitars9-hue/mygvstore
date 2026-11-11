@@ -52,7 +52,7 @@ export async function loadCatalog() {
     const prices = js.map((x) => x.minPrice).filter((p): p is number => p !== null);
     return {
       ...gm,
-      jokiCount: js.length,
+     jokiCount: js.filter((x) => x.services.length > 0).length,
       minPrice: prices.length ? Math.min(...prices) : null,
       rating: n ? sum / n : null,
       reviews: n,

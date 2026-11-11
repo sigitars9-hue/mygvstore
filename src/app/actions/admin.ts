@@ -87,7 +87,6 @@ export async function saveGame(fd: FormData): Promise<R> {
     cs_name: str(fd, "cs_name") || null,
     cs_wa: cs_wa || null,
     badges: str(fd, "badges").split(",").map((s) => s.trim()).filter(Boolean),
-    promoted: fd.get("promoted") === "on",
     is_soon: fd.get("is_soon") === "on",
   }).eq("slug", str(fd, "slug"));
   if (error) return { error: error.message };
