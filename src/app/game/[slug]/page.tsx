@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { loadCatalog } from "@/lib/catalog";
-import { catOf, shortName, rp, subGroups, hasPromo, discountPct, badgeTone, type Service } from "@/lib/utils";
+import { catOf, shortName, rp, subGroups, hasPromo, discountPct, badgeTone, bySort, minSort, type Service } from "@/lib/utils";
 import { GAME_ICONS } from "@/lib/game-icons";
 import { Icon } from "@/components/Icons";
 import Terms from "@/components/Terms";
@@ -39,11 +39,13 @@ const hayOf = (s: Service) => `${s.name} ${shortName(s)} ${catOf(s)} ${hasPromo(
   const suggestion = searching && visible.length === 0 ? didYouMean(terms, rows, hayOf) : null;
 
   const groups = new Map<string, Service[]>();
-  [...visible].sort((a, b) => nat(a.name, b.name) || a.price - b.price).forEach((s) => {
+  [...visible].sort((a, b) => bySort(a, b) || a.price - b.price).forEach((s) => {
     const c = catOf(s);
     groups.set(c, [...(groups.get(c) ?? []), s]);
   });
-  const cats = [...groups.entries()].sort(([a], [b]) => (a === "Lainnya" ? 1 : b === "Lainnya" ? -1 : nat(a, b)));
+  const cats = [...groups.entries()].sort(([a, ia], [b, ib]) =>
+    a === "Lainnya" ? 1 : b === "Lainnya" ? -1 : minSort(ia) - minSort(ib) || nat(a, b)
+  );
 
   const active = searching ? null : k && groups.has(k) ? k : cats.length === 1 ? cats[0][0] : null;
   const items = active ? groups.get(active)! : [];

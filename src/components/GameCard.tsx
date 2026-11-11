@@ -14,10 +14,6 @@ export default function GameCard({ g, i }: { g: GameView; i: number }) {
   const it = "flex items-center gap-2";
   const ic = "h-4 w-4 shrink-0 text-gray-400 transition-colors group-hover:text-pink-500 lg:h-5 lg:w-5";
   const pic = g.cs_name || "Admin";
-
-  const jokiText =
-    g.jokiCount > 0 ? `${g.jokiCount} joki tersedia` : "Belum ada joki";
-
   const info = (
     <>
       <span className={it}>
@@ -26,9 +22,6 @@ export default function GameCard({ g, i }: { g: GameView; i: number }) {
       </span>
       <span className={it}>
         <Icon name="clock" className={ic} />Respon sekitar {respText(g.response)}
-      </span>
-      <span className={it}>
-        <Icon name="list" className={ic} />{jokiText}
       </span>
       <span className={it}>
         <Icon name="chat" className={ic} />PIC/CS: <b className="font-semibold text-[#0d0c22]">{pic}</b>
@@ -93,12 +86,12 @@ export default function GameCard({ g, i }: { g: GameView; i: number }) {
           </span>
 
           <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-              <div className="flex flex-wrap items-center gap-1.5 lg:gap-2">
-                <Link href={`/game/${g.slug}`} className="text-base font-bold tracking-tight text-[#0d0c22] transition-colors hover:text-pink-600 lg:text-xl">
-                  {g.name}
-                </Link>
+            <Link href={`/game/${g.slug}`} className="block text-base font-bold tracking-tight text-[#0d0c22] transition-colors hover:text-pink-600 lg:text-xl">
+              {g.name}
+            </Link>
 
+            {(g.maxDiscount > 0 || g.badges.length > 0 || g.is_soon) && (
+              <div className="mt-1 flex flex-wrap items-center gap-1.5 lg:gap-2">
                 {g.maxDiscount > 0 && (
                   <span className="animate-pop-in rounded-md bg-gradient-to-b from-red-500 to-red-700 px-2 py-0.5 text-[10px] font-extrabold text-white shadow-sm shadow-red-500/30 lg:rounded-lg lg:px-2.5 lg:py-1 lg:text-xs">
                     PROMO s/d {g.maxDiscount}%
@@ -111,15 +104,16 @@ export default function GameCard({ g, i }: { g: GameView; i: number }) {
 
                 {g.is_soon && <span className="rounded-md bg-pink-500 px-2 py-0.5 text-[10px] font-extrabold text-white lg:rounded-lg lg:px-2.5 lg:py-1 lg:text-xs">SEGERA</span>}
               </div>
-              <div className="flex w-full flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold lg:w-auto lg:gap-x-4 lg:text-sm">
-                <span className="flex items-center gap-1">
-                  <Icon name="star" className="h-3.5 w-3.5 text-amber-500 lg:h-4 lg:w-4" />{g.rating ? g.rating.toFixed(1) : "Baru"}
-                  {g.reviews > 0 && <span className="font-normal text-gray-400">({g.reviews})</span>}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Icon name="check" className="h-3.5 w-3.5 lg:h-4 lg:w-4" />{g.projects.toLocaleString("id-ID")} diselesaikan
-                </span>
-              </div>
+            )}
+
+            <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold lg:gap-x-4 lg:text-sm">
+              <span className="flex items-center gap-1">
+                <Icon name="star" className="h-3.5 w-3.5 text-amber-500 lg:h-4 lg:w-4" />{g.rating ? g.rating.toFixed(1) : "Baru"}
+                {g.reviews > 0 && <span className="font-normal text-gray-400">({g.reviews})</span>}
+              </span>
+              <span className="flex items-center gap-1">
+                <Icon name="check" className="h-3.5 w-3.5 lg:h-4 lg:w-4" />{g.projects.toLocaleString("id-ID")} diselesaikan
+              </span>
             </div>
             <div className="mt-2 hidden flex-wrap items-center gap-x-5 gap-y-1 text-sm text-gray-600 lg:flex">{info}</div>
           </div>

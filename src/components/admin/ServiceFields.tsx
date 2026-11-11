@@ -31,6 +31,10 @@ export default function ServiceFields({
         </select>
       </div>
 <PriceFields s={s} />
+      <div>
+        <label className={lbl}>Urutan (angka kecil tampil duluan)</label>
+        <input name="sort" type="number" defaultValue={s?.sort ?? 0} className={inp} />
+      </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className={lbl}>Satuan</label>

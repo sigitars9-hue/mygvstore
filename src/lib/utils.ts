@@ -20,7 +20,9 @@ export type Service = {
   category?: string | null;
   sub_category?: string | null;
   original_price?: number | null;
+    sort?: number | null;
 };
+
 export const hasPromo = (s: { price: number; original_price?: number | null }) =>
   !!s.original_price && s.original_price > s.price;
 
@@ -41,7 +43,16 @@ export const shortName = (s: { category?: string | null; name: string }) => {
 };
 
 // Kelompokkan layanan per sub kategori. Tanpa sub kategori (kosong) selalu di atas.
-export function subGroups<T extends { sub_category?: string | null }>(
+export const bySort = (
+  a: { sort?: number | null; name: string },
+  b: { sort?: number | null; name: string }
+) => (a.sort ?? 0) - (b.sort ?? 0) || a.name.localeCompare(b.name, "id", { numeric: true });
+
+export const minSort = (arr: { sort?: number | null }[]) =>
+  Math.min(...arr.map((s) => s.sort ?? 0));
+
+// Kelompokkan layanan per sub kategori. Tanpa sub kategori (kosong) selalu di atas.
+export function subGroups<T extends { sub_category?: string | null; sort?: number | null }>(
   arr: T[]
 ): [string, T[]][] {
   const m = new Map<string, T[]>();
@@ -49,8 +60,9 @@ export function subGroups<T extends { sub_category?: string | null }>(
     const k = s.sub_category?.trim() ?? "";
     m.set(k, [...(m.get(k) ?? []), s]);
   });
-  return [...m.entries()].sort(([a], [b]) =>
-    a === "" ? -1 : b === "" ? 1 : a.localeCompare(b, "id", { numeric: true })
+  return [...m.entries()].sort(([a, ia], [b, ib]) =>
+    a === "" ? -1 : b === "" ? 1
+      : minSort(ia) - minSort(ib) || a.localeCompare(b, "id", { numeric: true })
   );
 }
 

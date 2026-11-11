@@ -225,6 +225,7 @@ function serviceFields(fd: FormData) {
       duration: str(fd, "duration") || null,
       joki_id: str(fd, "joki_id"),
       sub_category: str(fd, "sub_category") || null,
+            sort: Math.round(Number(fd.get("sort"))) || 0,
       includes: lines(fd.get("includes")),
       is_active: fd.get("is_active") === "on",
       original_price: original,
@@ -241,7 +242,29 @@ export async function saveService(fd: FormData): Promise<R> {
   publish();
   return { ok: true };
 }
+export async function moveService(fd: FormData): Promise<R> {
+  await requireAdmin();
+  const ids = str(fd, "ids").split(",").filter(Boolean);
+  const id = str(fd, "id");
+  const dir = str(fd, "dir");
+  const base = Math.round(Number(fd.get("base"))) || 0;
 
+  const i = ids.indexOf(id);
+  const j = dir === "up" ? i - 1 : i + 1;
+  if (i < 0 || j < 0 || j >= ids.length) return { error: "Tidak bisa dipindah" };
+
+  [ids[i], ids[j]] = [ids[j], ids[i]];
+
+  // Beri ulang angka urut seluruh kategori sesuai urutan baru
+  const res = await Promise.all(
+    ids.map((x, n) => db.from("services").update({ sort: base + n * 10 }).eq("id", x))
+  );
+  const failed = res.find((r) => r.error);
+  if (failed?.error) return { error: failed.error.message };
+
+  publish();
+  return { ok: true };
+}
 /* ---------- Gambar Kategori Layanan ---------- */
 export async function saveServiceCats(fd: FormData): Promise<R> {
   await requireAdmin();
