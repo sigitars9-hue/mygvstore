@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { rp, type Service, type ServiceOption } from "@/lib/utils";
+import { rp, hasPromo, discountPct, type Service, type ServiceOption } from "@/lib/utils";
 import { useCart } from "@/lib/cart-store";
 import { Icon } from "@/components/Icons";
 import ZoomImage from "@/components/ZoomImage";
@@ -27,6 +27,8 @@ export default function ServiceRow({
   const opts: ServiceOption[] = s.options ?? [];
   const img = s.image_url || gameIcon || null;
   const total = s.price * qty;
+  const promo = hasPromo(s);
+  const pct = discountPct(s);
   const close = () => ref.current?.close();
   const set = (label: string, v: string) => { setSel((p) => ({ ...p, [label]: v })); setErr(""); };
 
@@ -86,7 +88,10 @@ export default function ServiceRow({
           )}
         </span>
         <span className="flex shrink-0 flex-col items-end gap-1.5">
-          <b className="text-[15px] text-[#0d0c22] transition group-hover:text-pink-600">{rp(s.price)}</b>
+          <span className="flex flex-col items-end leading-tight">
+  {promo && <span className="text-[11px] font-medium text-gray-400 line-through">{rp(s.original_price!)}</span>}
+  <b className={`text-[15px] transition ${promo ? "text-red-600" : "text-[#0d0c22] group-hover:text-pink-600"}`}>{rp(s.price)}</b>
+</span>
           <span className="flex items-center gap-1 rounded-full bg-[#0d0c22] py-1.5 pl-3.5 pr-2.5 text-xs font-bold text-white transition group-hover:bg-pink-500 group-hover:shadow-lg group-hover:shadow-pink-500/30">
             Pilih
             <Icon name="right" className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />

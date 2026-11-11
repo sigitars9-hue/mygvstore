@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Icon } from "@/components/Icons";
 import { signOut } from "@/app/actions/admin";
+import { LinkSpinner } from "@/components/LinkPending";
 
 const TABS = [
   ["home", "/admin", "Ringkasan", "grid"],
@@ -23,7 +24,9 @@ export default function AdminShell({ active, children }: { active: string; child
             return (
               <Link key={k} href={href} aria-current={on ? "page" : undefined}
                 className={`${base} ${on ? "bg-[#0d0c22] text-white shadow-md shadow-black/10" : "text-gray-600 hover:bg-gray-100 hover:text-[#0d0c22]"}`}>
-                <Icon name={icon} className={`h-4 w-4 transition ${on ? "" : "group-hover:scale-110 group-hover:-rotate-6"}`} />
+                <LinkSpinner>
+                  <Icon name={icon} className={`h-4 w-4 transition ${on ? "" : "group-hover:scale-110 group-hover:-rotate-6"}`} />
+                </LinkSpinner>
                 {label}
                 {on && <span className="h-1.5 w-1.5 rounded-full bg-pink-400" />}
               </Link>
@@ -42,6 +45,7 @@ export default function AdminShell({ active, children }: { active: string; child
           </form>
         </div>
       </div>
+
       {children}
     </div>
   );

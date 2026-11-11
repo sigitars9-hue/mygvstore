@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Mona_Sans } from "next/font/google";
 import SiteHeader from "@/components/SiteHeader";
 import CartBar from "@/components/CartBar";
+import NavProgress from "@/components/NavProgress";
 
 const mona = Mona_Sans({
   subsets: ["latin"],
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   <SiteHeader />
   <main className="mx-auto max-w-7xl p-5">{children}</main>
 <CartBar />
+  <NavProgress />
 </body>
     </html>
   );

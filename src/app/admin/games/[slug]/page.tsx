@@ -58,8 +58,8 @@ export default async function AdminGame({ params }: { params: Promise<{ slug: st
           <input name="name" defaultValue={g.name} required className={inp} />
         </div>
         <div>
-          <label className={lbl}>Badge (pisahkan dengan koma)</label>
-          <input name="badges" defaultValue={(g.badges ?? []).join(", ")} placeholder="POPULER, TERPERCAYA" className={inp} />
+          <label className={lbl}>Badge (pisahkan koma; kata promo/diskon/sale otomatis merah)</label>
+<input name="badges" defaultValue={(g.badges ?? []).join(", ")} placeholder="FLASH SALE, DISKON 20%" className={inp} />
         </div>
         <div>
           <label className={lbl}>Nama PIC/CS (tampil di kartu game)</label>

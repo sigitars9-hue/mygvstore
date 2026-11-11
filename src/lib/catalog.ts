@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import type { Service } from "@/lib/utils";
+import { discountPct, type Service } from "@/lib/utils";
 
 export type Game = {
   id: string; slug: string; name: string; is_soon: boolean; promoted: boolean;
@@ -17,7 +17,7 @@ export type GameView = Game & {
   jokiCount: number; minPrice: number | null; rating: number | null;
   reviews: number; projects: number; response: number;
   icon: string | null; categoryImages: Record<string, string>;
-  
+  maxDiscount: number;
 };
 
 export const respText = (m: number) => (m < 60 ? `${m} menit` : m === 60 ? "1 jam" : `${Math.round(m / 60)} jam`);
@@ -52,7 +52,7 @@ export async function loadCatalog() {
     const prices = js.map((x) => x.minPrice).filter((p): p is number => p !== null);
     return {
       ...gm,
-     jokiCount: js.filter((x) => x.services.length > 0).length,
+      jokiCount: js.filter((x) => x.services.length > 0).length,
       minPrice: prices.length ? Math.min(...prices) : null,
       rating: n ? sum / n : null,
       reviews: n,
@@ -60,6 +60,7 @@ export async function loadCatalog() {
       response: js.length ? Math.round(js.reduce((a, x) => a + x.response_minutes, 0) / js.length) : 60,
       icon: gm.icon_url ?? null,
       categoryImages: gm.category_images ?? {},
+      maxDiscount: Math.max(0, ...js.flatMap((x) => x.services).map(discountPct)),
     };
   });
   return { games, jokis };

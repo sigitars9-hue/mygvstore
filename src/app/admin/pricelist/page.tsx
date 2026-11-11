@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { supabaseAdmin as db } from "@/lib/supabase/admin";
-import { rp, catOf, shortName, subGroups } from "@/lib/utils";
+import { rp, catOf, shortName, subGroups, hasPromo, discountPct } from "@/lib/utils";
 import { Icon } from "@/components/Icons";
 import AdminShell from "@/components/admin/AdminShell";
 import SaveForm, { Submit, DeleteButton } from "@/components/admin/SaveForm";
@@ -14,7 +14,10 @@ import { PageHeader, stagger } from "@/components/admin/AdminKit";
 import { ServicePreview } from "@/components/admin/FormPreview";
 
 const nat = (a: string, b: string) => a.localeCompare(b, "id", { numeric: true });
-
+const rangeOf = (n: number[]) => {
+  const lo = Math.min(...n), hi = Math.max(...n);
+  return lo === hi ? rp(lo) : `${rp(lo)} – ${rp(hi)}`;
+};
 export default async function AdminPricelist({ searchParams }: { searchParams: Promise<{ game?: string }> }) {
   const { game } = await searchParams;
   await requireAdmin();
@@ -47,7 +50,8 @@ export default async function AdminPricelist({ searchParams }: { searchParams: P
   const catNames = ordered.map(([k]) => k).filter((k) => k !== "Lainnya");
   const catImgs: Record<string, string> = g.service_cat_images ?? {};
   const activeCount = services.filter((s) => s.is_active).length;
-
+  const promoTotal = services.filter(hasPromo).length;
+  const allRange = services.length ? rangeOf(services.map((s) => s.price)) : "-";
   // Daftar sub kategori yang sudah ada (untuk saran otomatis di form)
   const allSubs = [...new Set(services.map((s) => (s.sub_category ?? "").trim()).filter(Boolean))].sort(nat) as string[];
 
@@ -69,18 +73,11 @@ export default async function AdminPricelist({ searchParams }: { searchParams: P
       <div className={`${card} mt-4`}>
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 className="text-lg font-bold">{g.name}</h2>
-          <span className="text-xs text-gray-500">
-            {services.length} layanan · {activeCount} aktif · {ordered.length} kategori
-            {allSubs.length > 0 && ` · ${allSubs.length} sub kategori`}
-          </span>
+<span className="text-xs text-gray-500">
+  {services.length} layanan · {activeCount} aktif · {ordered.length} kategori · {allRange}
+  {promoTotal > 0 && <b className="ml-1 rounded-full bg-red-50 px-2 py-0.5 text-red-600">{promoTotal} promo</b>}
+</span>
         </div>
-
-        {!jokis.length && (
-          <p className="mt-3 flex items-center gap-2 rounded-2xl bg-amber-50 p-3.5 text-sm text-amber-800">
-            <Icon name="alert" className="h-4 w-4 shrink-0" />
-            Tambahkan grup (joki) dulu di halaman game, baru layanan bisa dibuat.
-          </p>
-        )}
 
         {/* Gambar kategori */}
         {catNames.length > 0 && (
@@ -106,15 +103,19 @@ export default async function AdminPricelist({ searchParams }: { searchParams: P
 
         <div id="svc-list" className="mt-4 space-y-3">
           {ordered.map(([name, items]) => {
-            const prices = items.map((s) => s.price);
-            const min = Math.min(...prices), max = Math.max(...prices);
+const promoCount = items.filter(hasPromo).length;
+const eff = rangeOf(items.map((s) => s.price));
+const base = rangeOf(items.map((s) => (hasPromo(s) ? s.original_price! : s.price)));
             return (
               <details key={name} data-group className="group/g overflow-hidden rounded-2xl border border-gray-200">
                 <summary className="flex cursor-pointer list-none items-center gap-3 bg-gray-50 px-4 py-3 [&::-webkit-details-marker]:hidden">
                   <b className="flex-1 text-[#0d0c22]">{name}</b>
-                  <span className="text-xs text-gray-500">
-                    {items.length} item · {min === max ? rp(min) : `${rp(min)} – ${rp(max)}`}
-                  </span>
+<span className="flex flex-wrap items-center gap-x-2 text-xs text-gray-500">
+  {items.length} item
+  {promoCount > 0 && base !== eff && <span className="text-gray-400 line-through">{base}</span>}
+  <span className={promoCount ? "font-semibold text-red-600" : ""}>{eff}</span>
+  {promoCount > 0 && <span className="rounded-full bg-red-500 px-2 py-0.5 font-extrabold text-white">{promoCount} promo</span>}
+</span>
                   <Icon name="chevron" className="h-4 w-4 transition-transform group-open/g:rotate-180" />
                 </summary>
 
@@ -128,7 +129,7 @@ export default async function AdminPricelist({ searchParams }: { searchParams: P
                       )}
                       {list.map((s) => (
                         <details key={s.id}
-                          data-svc={[s.name, s.sub_category, s.unit, s.price, s.description].filter(Boolean).join(" ").toLowerCase()}
+                          data-svc={[s.name, s.sub_category, s.unit, s.price, s.description, hasPromo(s) ? "promo diskon" : ""].filter(Boolean).join(" ").toLowerCase()}
                           className="group border-b border-gray-100 last:border-b-0">
                           <summary className="flex cursor-pointer list-none items-center gap-3 py-3.5 [&::-webkit-details-marker]:hidden">
                             <div className="min-w-0 flex-1">
@@ -139,7 +140,11 @@ export default async function AdminPricelist({ searchParams }: { searchParams: P
                               </p>
                             </div>
                             {!s.is_active && <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-bold text-gray-500">Nonaktif</span>}
-                            <span className="font-bold">{rp(s.price)}</span>
+                           <span className="flex flex-col items-end leading-tight">
+  {hasPromo(s) && <span className="text-[11px] text-gray-400 line-through">{rp(s.original_price!)}</span>}
+  <span className={`font-bold ${hasPromo(s) ? "text-red-600" : ""}`}>{rp(s.price)}</span>
+</span>
+{hasPromo(s) && <span className="rounded-full bg-red-500 px-2 py-1 text-xs font-extrabold text-white">-{discountPct(s)}%</span>}
                             <Icon name="chevron" className="h-4 w-4 transition-transform group-open:rotate-180" />
                           </summary>
                           <div className="pb-5 pt-1">

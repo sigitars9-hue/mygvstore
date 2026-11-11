@@ -5,6 +5,7 @@ import { Icon, type IconName } from "@/components/Icons";
 import AdminShell from "@/components/admin/AdminShell";
 import { PageHeader, StatCard, stagger } from "@/components/admin/AdminKit";
 import { card } from "@/components/admin/ui";
+import { LinkSpinner, LinkFade } from "@/components/LinkPending";
 
 export default async function AdminHome() {
   await requireAdmin();
@@ -52,20 +53,24 @@ export default async function AdminHome() {
 
       <h2 className="animate-fade-up mt-8 text-lg font-bold text-[#0d0c22]" style={stagger(4)}>Menu</h2>
       <div className="mt-3 grid gap-4 sm:grid-cols-2">
-        {menu.map((c, i) => (
-          <Link key={c.href} href={c.href} style={stagger(i + 5)}
-            className={`${card} group animate-fade-up flex items-start gap-4 transition duration-300 hover:-translate-y-1 hover:shadow-xl`}>
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gray-100 transition group-hover:bg-[#0d0c22] group-hover:text-white">
-              <Icon name={c.icon} />
-            </span>
-            <span className="min-w-0 flex-1">
-              <b className="block text-lg text-[#0d0c22]">{c.title}</b>
-              <span className="text-sm text-gray-600">{c.desc}</span>
-              {c.href === "/admin/testimoni" && <span className="mt-1 block text-xs font-semibold text-pink-600">{t.count ?? 0} tampil</span>}
-            </span>
-            <Icon name="right" className="mt-1 h-5 w-5 shrink-0 text-gray-300 transition group-hover:translate-x-1 group-hover:text-[#0d0c22]" />
-          </Link>
-        ))}
+{menu.map((c, i) => (
+  <Link key={c.href} href={c.href} style={stagger(i + 5)}
+    className={`${card} group animate-fade-up flex items-start gap-4 transition duration-300 hover:-translate-y-1 hover:shadow-xl`}>
+    <LinkFade className="flex min-w-0 flex-1 items-start gap-4">
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gray-100 transition group-hover:bg-[#0d0c22] group-hover:text-white">
+        <Icon name={c.icon} />
+      </span>
+      <span className="min-w-0 flex-1">
+        <b className="block text-lg text-[#0d0c22]">{c.title}</b>
+        <span className="text-sm text-gray-600">{c.desc}</span>
+        {c.href === "/admin/testimoni" && <span className="mt-1 block text-xs font-semibold text-pink-600">{t.count ?? 0} tampil</span>}
+      </span>
+    </LinkFade>
+    <LinkSpinner>
+      <Icon name="right" className="mt-1 h-5 w-5 shrink-0 text-gray-300 transition group-hover:translate-x-1 group-hover:text-[#0d0c22]" />
+    </LinkSpinner>
+  </Link>
+))}
       </div>
     </AdminShell>
   );

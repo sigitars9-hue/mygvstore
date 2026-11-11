@@ -188,6 +188,10 @@ function serviceFields(fd: FormData) {
   const image = str(fd, "image_url");
   if (!name) return { error: "Nama layanan wajib diisi" } as const;
   if (!Number.isFinite(price) || price < 0) return { error: "Harga tidak valid" } as const;
+    const rawOrig = str(fd, "original_price");
+  const original = rawOrig ? Math.round(Number(rawOrig)) : null;
+  if (original !== null && (!Number.isFinite(original) || original <= price))
+    return { error: "Harga normal harus lebih besar dari harga promo" } as const;
   if (!str(fd, "joki_id")) return { error: "Pilih joki" } as const;
   if (!urlOk(image)) return { error: "URL gambar tidak valid" } as const;
 
@@ -223,6 +227,7 @@ function serviceFields(fd: FormData) {
       sub_category: str(fd, "sub_category") || null,
       includes: lines(fd.get("includes")),
       is_active: fd.get("is_active") === "on",
+      original_price: original,
     },
   } as const;
 }

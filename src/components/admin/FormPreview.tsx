@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Icon } from "@/components/Icons";
-import { rp } from "@/lib/utils";
+import { rp, badgeTone } from "@/lib/utils";
 
 type Vals = Record<string, string[]>;
 
@@ -100,7 +100,7 @@ export function GamePreview() {
             <div className="flex flex-wrap items-center gap-1.5">
               <b className="text-base text-[#0d0c22]">{name}</b>
               {badges.map((b) => (
-                <span key={b} className="rounded-md bg-slate-800 px-2 py-0.5 text-[10px] font-extrabold text-white">{b}</span>
+                <span key={b} className={`rounded-md px-2 py-0.5 text-[10px] font-extrabold text-white ${badgeTone(b)}`}>{b}</span>
               ))}
               {soon && <span className="rounded-md bg-pink-500 px-2 py-0.5 text-[10px] font-extrabold text-white">SEGERA</span>}
             </div>
@@ -125,6 +125,9 @@ export function ServicePreview() {
   const unit = one(v, "unit") || "per paket";
   const dur = one(v, "duration");
   const sub = one(v, "sub_category");
+    const orig = Number(one(v, "original_price")) || 0;
+  const promo = orig > price && price > 0;
+  const pct = promo ? Math.round((1 - price / orig) * 100) : 0;
 
   return (
     <Shell anchor={anchor} dirty={dirty}>
@@ -136,11 +139,15 @@ export function ServicePreview() {
         <span className="min-w-0 flex-1">
           <b className="line-clamp-2 block font-semibold leading-snug text-[#0d0c22]">{one(v, "name") || "Nama layanan"}</b>
           <span className="mt-0.5 block text-xs text-gray-500">{dur ? `Estimasi ${dur} · ` : ""}{unit}{sub ? ` · ${sub}` : ""}</span>
+          {promo && <span className="mt-1 inline-block rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-extrabold text-white">PROMO -{pct}%</span>}
         </span>
-        <span className="flex shrink-0 flex-col items-end gap-1.5">
-          <b className="text-[15px]">{rp(price)}</b>
-          <span className="rounded-full bg-[#0d0c22] px-3.5 py-1.5 text-xs font-bold text-white">Pilih</span>
-        </span>
+<span className="flex shrink-0 flex-col items-end gap-1.5">
+  <span className="flex flex-col items-end leading-tight">
+    {promo && <span className="text-[11px] text-gray-400 line-through">{rp(orig)}</span>}
+    <b className={`text-[15px] ${promo ? "text-red-600" : ""}`}>{rp(price)}</b>
+  </span>
+  <span className="rounded-full bg-[#0d0c22] px-3.5 py-1.5 text-xs font-bold text-white">Pilih</span>
+</span>
       </div>
     </Shell>
   );

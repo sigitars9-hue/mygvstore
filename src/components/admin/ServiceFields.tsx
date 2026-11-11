@@ -1,5 +1,6 @@
 import ImageUpload from "@/components/admin/ImageUpload";
 import { inp, lbl } from "@/components/admin/ui";
+import PriceFields from "@/components/admin/PriceFields";
 
 export default function ServiceFields({
   s, jokis, subs = [],
@@ -29,10 +30,7 @@ export default function ServiceFields({
           {jokis.map((j) => <option key={j.id} value={j.id}>{j.name}</option>)}
         </select>
       </div>
-      <div>
-        <label className={lbl}>Harga (Rp)</label>
-        <input name="price" type="number" min={0} step={500} defaultValue={s?.price} required className={inp} />
-      </div>
+<PriceFields s={s} />
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className={lbl}>Satuan</label>

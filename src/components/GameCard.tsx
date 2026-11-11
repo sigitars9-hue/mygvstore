@@ -1,12 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { respText, type GameView } from "@/lib/catalog";
-import { rp } from "@/lib/utils";
+import { rp, badgeTone } from "@/lib/utils";
 import { Icon } from "@/components/Icons";
 import ServiceArt, { KEYS, bgOf } from "@/components/ServiceArt";
 import Carousel from "@/components/Carousel";
 import SaveButton from "@/components/SaveButton";
 import GameAvatar from "@/components/GameAvatar";
+import { LinkSpinner } from "@/components/LinkPending";
 
 export default function GameCard({ g, i }: { g: GameView; i: number }) {
   const cats = g.categories;
@@ -44,7 +45,9 @@ export default function GameCard({ g, i }: { g: GameView; i: number }) {
         className={`group/cta flex items-center justify-center gap-1.5 rounded-full bg-[#0d0c22] text-center font-bold text-white transition hover:bg-pink-500 hover:shadow-lg hover:shadow-pink-500/30 ${cls}`}
       >
         Lihat Joki
-        <Icon name="right" className="h-4 w-4 transition group-hover/cta:translate-x-1" />
+        <LinkSpinner>
+          <Icon name="right" className="h-4 w-4 transition group-hover/cta:translate-x-1" />
+        </LinkSpinner>
       </Link>
     );
 
@@ -95,9 +98,17 @@ export default function GameCard({ g, i }: { g: GameView; i: number }) {
                 <Link href={`/game/${g.slug}`} className="text-base font-bold tracking-tight text-[#0d0c22] transition-colors hover:text-pink-600 lg:text-xl">
                   {g.name}
                 </Link>
-                {g.badges.map((b, k) => (
-                  <span key={b} className={`rounded-md px-2 py-0.5 text-[10px] font-extrabold text-white lg:rounded-lg lg:px-2.5 lg:py-1 lg:text-xs ${k === 0 ? "bg-gray-600" : "bg-gradient-to-b from-slate-600 to-slate-900"}`}>{b}</span>
+
+                {g.maxDiscount > 0 && (
+                  <span className="animate-pop-in rounded-md bg-gradient-to-b from-red-500 to-red-700 px-2 py-0.5 text-[10px] font-extrabold text-white shadow-sm shadow-red-500/30 lg:rounded-lg lg:px-2.5 lg:py-1 lg:text-xs">
+                    PROMO s/d {g.maxDiscount}%
+                  </span>
+                )}
+
+                {g.badges.map((b) => (
+                  <span key={b} className={`rounded-md px-2 py-0.5 text-[10px] font-extrabold text-white lg:rounded-lg lg:px-2.5 lg:py-1 lg:text-xs ${badgeTone(b)}`}>{b}</span>
                 ))}
+
                 {g.is_soon && <span className="rounded-md bg-pink-500 px-2 py-0.5 text-[10px] font-extrabold text-white lg:rounded-lg lg:px-2.5 lg:py-1 lg:text-xs">SEGERA</span>}
               </div>
               <div className="flex w-full flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold lg:w-auto lg:gap-x-4 lg:text-sm">

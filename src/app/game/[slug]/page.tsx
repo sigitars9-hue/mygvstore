@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { loadCatalog } from "@/lib/catalog";
-import { catOf, shortName, rp, subGroups, type Service } from "@/lib/utils";
+import { catOf, shortName, rp, subGroups, hasPromo, discountPct, badgeTone, type Service } from "@/lib/utils";
 import { GAME_ICONS } from "@/lib/game-icons";
 import { Icon } from "@/components/Icons";
 import Terms from "@/components/Terms";
@@ -26,9 +26,9 @@ export default async function GamePage({
   if (!g) notFound();
 
   const rows: Service[] = jokis.filter((j) => j.game_id === g.id).flatMap((j) => j.services);
-
+  const maxDiscount = Math.max(0, ...rows.map(discountPct));
   // Pencarian: semua kata harus cocok di nama / nama pendek / kategori
-  const hayOf = (s: Service) => `${s.name} ${shortName(s)} ${catOf(s)}`.toLowerCase();
+const hayOf = (s: Service) => `${s.name} ${shortName(s)} ${catOf(s)} ${hasPromo(s) ? "promo diskon" : ""}`.toLowerCase();
   const terms = (q ?? "").trim().toLowerCase().split(/\s+/).filter(Boolean);
   const searching = terms.length > 0;
   
@@ -69,11 +69,16 @@ export default async function GamePage({
             <div className="min-w-0 flex-1">
               <h1 className="text-xl font-extrabold leading-tight tracking-tight text-[#0d0c22] sm:text-3xl">{g.name}</h1>
               {g.badges.length > 0 && (
-                <div className="mt-1.5 flex flex-wrap gap-1.5">
-                  {g.badges.map((b) => (
-                    <span key={b} className="rounded-md bg-slate-800 px-2 py-0.5 text-[10px] font-extrabold text-white">{b}</span>
-                  ))}
-                </div>
+<div className="mt-1.5 flex flex-wrap gap-1.5">
+  {maxDiscount > 0 && (
+    <span className="animate-pop-in rounded-md bg-gradient-to-b from-red-500 to-red-700 px-2 py-0.5 text-[10px] font-extrabold text-white shadow-sm shadow-red-500/30">
+      PROMO s/d {maxDiscount}%
+    </span>
+  )}
+  {g.badges.map((b) => (
+    <span key={b} className={`rounded-md px-2 py-0.5 text-[10px] font-extrabold text-white ${badgeTone(b)}`}>{b}</span>
+  ))}
+</div>
               )}
             </div>
           </div>
@@ -155,7 +160,7 @@ export default async function GamePage({
                       </span>
                       <span className="min-w-0 flex-1">
                         <b className="block truncate text-lg text-[#0d0c22]">{name}</b>
-                        <span className="text-sm text-gray-500">{list.length} layanan · mulai {rp(min)}</span>
+                        {list.some(hasPromo) && <span className="ml-2 rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-bold text-red-600">PROMO</span>}
                       </span>
                     </LinkFade>
                     <LinkSpinner>

@@ -19,8 +19,20 @@ export type Service = {
   options?: ServiceOption[] | null;
   category?: string | null;
   sub_category?: string | null;
+  original_price?: number | null;
 };
+export const hasPromo = (s: { price: number; original_price?: number | null }) =>
+  !!s.original_price && s.original_price > s.price;
 
+export const discountPct = (s: { price: number; original_price?: number | null }) =>
+  hasPromo(s) ? Math.round((1 - s.price / s.original_price!) * 100) : 0;
+
+// Badge yang mengandung kata promo/diskon/sale otomatis merah
+const PROMO_WORDS = /promo|diskon|sale|hemat|flash|%/i;
+export const badgeTone = (b: string) =>
+  PROMO_WORDS.test(b)
+    ? "bg-gradient-to-b from-red-500 to-red-700 shadow-sm shadow-red-500/30"
+    : "bg-slate-800";
 export const catOf = (s: { category?: string | null; name: string }) =>
   s.category?.trim() || (s.name.includes(" - ") ? s.name.split(" - ")[0].trim() : "Lainnya");
 export const shortName = (s: { category?: string | null; name: string }) => {
