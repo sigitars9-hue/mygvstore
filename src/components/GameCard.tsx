@@ -24,7 +24,7 @@ export default function GameCard({ g, i }: { g: GameView; i: number }) {
         <Icon name="clock" className={ic} />Respon sekitar {respText(g.response)}
       </span>
       <span className={it}>
-        <Icon name="chat" className={ic} />PIC/CS: <b className="font-semibold text-[#0d0c22]">{pic}</b>
+        <Icon name="chat" className={ic} />Customer Service: <b className="font-semibold text-[#0d0c22]">{pic}</b>
       </span>
     </>
   );

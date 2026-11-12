@@ -50,15 +50,15 @@ export default function Header({ games, cs }: { games: NavGame[]; cs: CsEntry[] 
   return (
     <header className="relative z-30 bg-white">
       <div className="mx-auto flex h-[68px] max-w-7xl items-center gap-3 px-4 sm:px-5 md:gap-8">
-        <button
-          aria-label="Menu"
-          onClick={() => { setOpen(!open); setChat(false); }}
-          className="-ml-1 p-1 md:hidden"
-        >
-          <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="#0d0c22" strokeWidth="2.2" strokeLinecap="round">
-            {open ? <path d="M6 6l12 12M18 6 6 18" /> : <path d="M3 7h18M3 12h12M3 17h18" />}
-          </svg>
-        </button>
+ <button
+  aria-label="Menu"
+  onClick={() => { setOpen(!open); setChat(false); }}
+  className="-ml-1 p-1 text-[#0d0c22] md:hidden dark:text-white"
+>
+  <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+    {open ? <path d="M6 6l12 12M18 6 6 18" /> : <path d="M3 7h18M3 12h12M3 17h18" />}
+  </svg>
+</button>
 
         <Link href="/" aria-label="Mygvstore, ke beranda" className="flex shrink-0 items-center">
           <Image
