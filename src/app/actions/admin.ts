@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { supabaseAdmin as db } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/auth";
 import { r2 } from "@/lib/r2";
-
+import { catOf } from "@/lib/utils";
 type R = { ok?: boolean; error?: string };
 
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
@@ -224,7 +224,8 @@ function serviceFields(fd: FormData) {
       unit: str(fd, "unit") || "per paket",
       duration: str(fd, "duration") || null,
       joki_id: str(fd, "joki_id"),
-      sub_category: str(fd, "sub_category") || null,
+            sub_category: str(fd, "sub_category") || null,
+      category: str(fd, "category") || null,
             sort: Math.round(Number(fd.get("sort"))) || 0,
       includes: lines(fd.get("includes")),
       is_active: fd.get("is_active") === "on",
@@ -261,6 +262,82 @@ export async function moveService(fd: FormData): Promise<R> {
   );
   const failed = res.find((r) => r.error);
   if (failed?.error) return { error: failed.error.message };
+
+  publish();
+  return { ok: true };
+}
+export async function renameServiceCategory(fd: FormData): Promise<R> {
+  await requireAdmin();
+  const slug = str(fd, "game_slug");
+  const oldName = str(fd, "old");
+  const newName = str(fd, "new");
+  if (!newName) return { error: "Nama kategori baru wajib diisi" };
+  if (newName === oldName) return { error: "Nama kategori belum diubah" };
+
+  const { data: g } = await db.from("games").select("id,service_cat_images").eq("slug", slug).single();
+  if (!g) return { error: "Game tidak ditemukan" };
+  const { data: jk } = await db.from("jokis").select("id").eq("game_id", g.id);
+  const { data: svc } = await db.from("services").select("id,name,category").in("joki_id", (jk ?? []).map((j) => j.id));
+
+  const targets = (svc ?? []).filter((s) => catOf(s) === oldName);
+  if (!targets.length) return { error: "Kategori tidak ditemukan" };
+
+  const res = await Promise.all(
+    targets.map((s) =>
+      db.from("services").update({
+        category: newName,
+        // nama berawalan "Kategori lama - ..." ikut diganti supaya tetap rapi
+        name: s.name.startsWith(oldName + " - ") ? newName + " - " + s.name.slice(oldName.length + 3) : s.name,
+      }).eq("id", s.id)
+    )
+  );
+  const failed = res.find((r) => r.error);
+  if (failed?.error) return { error: failed.error.message };
+
+  // gambar kategori ikut pindah ke nama baru
+  const imgs: Record<string, string> = { ...(g.service_cat_images ?? {}) };
+  if (imgs[oldName]) {
+    if (!imgs[newName]) imgs[newName] = imgs[oldName];
+    delete imgs[oldName];
+    await db.from("games").update({ service_cat_images: imgs }).eq("id", g.id);
+  }
+
+  publish();
+  return { ok: true };
+}
+export async function deleteServiceCategory(fd: FormData): Promise<R> {
+  await requireAdmin();
+  const slug = str(fd, "game_slug");
+  const name = str(fd, "name");
+  if (!name) return { error: "Kategori tidak valid" };
+
+  const { data: g } = await db.from("games").select("id,service_cat_images").eq("slug", slug).single();
+  if (!g) return { error: "Game tidak ditemukan" };
+  const { data: jk } = await db.from("jokis").select("id").eq("game_id", g.id);
+  const { data: svc } = await db.from("services").select("id,name,category").in("joki_id", (jk ?? []).map((j) => j.id));
+
+  const targets = (svc ?? []).filter((s) => catOf(s) === name);
+  if (!targets.length) return { error: "Kategori tidak ditemukan" };
+
+  for (const s of targets) {
+    const { error } = await db.from("services").delete().eq("id", s.id);
+    if (error) {
+      // sudah pernah dipesan/diulas: nonaktifkan saja
+      if (error.code === "23503") {
+        const off = await db.from("services").update({ is_active: false }).eq("id", s.id);
+        if (off.error) return { error: off.error.message };
+      } else {
+        return { error: error.message };
+      }
+    }
+  }
+
+  // hapus gambar kategori
+  const imgs: Record<string, string> = { ...(g.service_cat_images ?? {}) };
+  if (imgs[name]) {
+    delete imgs[name];
+    await db.from("games").update({ service_cat_images: imgs }).eq("id", g.id);
+  }
 
   publish();
   return { ok: true };

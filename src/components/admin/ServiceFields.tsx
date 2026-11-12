@@ -3,10 +3,11 @@ import { inp, lbl } from "@/components/admin/ui";
 import PriceFields from "@/components/admin/PriceFields";
 
 export default function ServiceFields({
-  s, jokis, subs = [],
-}: { s?: any; jokis: { id: string; name: string }[]; subs?: string[] }) {
+  s, jokis, subs = [], cats = [],
+}: { s?: any; jokis: { id: string; name: string }[]; subs?: string[]; cats?: string[] }) {
   const rows: any[] = [...(s?.options ?? []), {}];
   const listId = `sub-cats-${s?.id ?? "new"}`;
+    const catListId = `svc-cats-${s?.id ?? "new"}`;
   return (
     <>
       <div className="sm:col-span-2">
@@ -18,10 +19,10 @@ export default function ServiceFields({
         <input name="name" defaultValue={s?.name} required className={inp} />
       </div>
       <div>
-        <label className={lbl}>Sub kategori (opsional)</label>
-        <input name="sub_category" list={listId} defaultValue={s?.sub_category ?? ""}
-          placeholder="mis. Rank Mythic" autoComplete="off" className={inp} />
-        <datalist id={listId}>{subs.map((x) => <option key={x} value={x} />)}</datalist>
+        <label className={lbl}>Kategori (pilih yang ada, atau ketik nama baru)</label>
+        <input name="category" list={catListId} defaultValue={s?.category ?? ""}
+          placeholder="mis. Build Char" autoComplete="off" className={inp} />
+        <datalist id={catListId}>{cats.map((x) => <option key={x} value={x} />)}</datalist>
       </div>
       <div>
         <label className={lbl}>Grup (joki)</label>
