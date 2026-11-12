@@ -63,7 +63,7 @@ const hayOf = (s: Service) => `${s.name} ${shortName(s)} ${catOf(s)} ${hasPromo(
       <PageNav />
 
       <section className="animate-fade-up relative overflow-hidden rounded-3xl border border-gray-200 bg-white p-4 sm:p-6">
-        <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-gradient-to-br from-pink-200/50 to-violet-200/40 blur-3xl" />
+        <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-gradient-to-br from-pink-200/50 to-violet-200/40 blur-3xl dark:from-pink-500/25 dark:to-fuchsia-500/10" />
 
         <div className="relative">
           <div className="flex items-center gap-3">
@@ -157,12 +157,12 @@ const hayOf = (s: Service) => `${s.name} ${shortName(s)} ${catOf(s)} ${hasPromo(
                   <Link href={`/game/${g.slug}?k=${encodeURIComponent(name)}`} scroll
                     className="group flex items-center gap-4 p-3 transition hover:bg-gray-50 active:scale-[0.99] active:bg-gray-100 sm:p-4">
                     <LinkFade className="flex min-w-0 flex-1 items-center gap-4">
-                      <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-gray-100 ring-1 ring-gray-200 transition group-hover:ring-[#0d0c22]/30">
+                      <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-gray-100 ring-1 ring-gray-200 transition group-hover:ring-[#0d0c22]/30 dark:group-hover:ring-white/30"> 
                         {img && <Image src={img} alt="" fill sizes="64px" className="object-cover transition duration-500 group-hover:scale-110" />}
                       </span>
                       <span className="min-w-0 flex-1">
                         <b className="block truncate text-lg text-[#0d0c22]">{name}</b>
-                        {list.some(hasPromo) && <span className="ml-2 rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-bold text-red-600">PROMO</span>}
+                        {list.some(hasPromo) && <span className="ml-2 rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-bold text-red-600 dark:bg-red-500/15 dark:text-red-400">PROMO</span>}
                       </span>
                     </LinkFade>
                     <LinkSpinner>
@@ -194,7 +194,7 @@ const hayOf = (s: Service) => `${s.name} ${shortName(s)} ${catOf(s)} ${hasPromo(
                   <Link
                     href={`/game/${g.slug}?q=${encodeURIComponent(suggestion)}`}
                     scroll={false}
-                    className="font-bold text-pink-600 underline decoration-pink-300 underline-offset-4 transition hover:text-pink-700"
+                    className="font-bold text-pink-600 underline decoration-pink-300 underline-offset-4 transition hover:text-pink-700 dark:text-pink-400 dark:hover:text-pink-300"
                   >
                     {suggestion}
                   </Link>
@@ -228,7 +228,7 @@ const hayOf = (s: Service) => `${s.name} ${shortName(s)} ${catOf(s)} ${hasPromo(
       {active && (
         <section className="mt-6">
           {cats.length > 1 && (
-            <Link href={`/game/${g.slug}`} className="mb-3 inline-flex items-center gap-1.5 text-sm font-semibold text-gray-500 hover:text-black">
+            <Link href={`/game/${g.slug}`} className="mb-3 inline-flex items-center gap-1.5 text-sm font-semibold text-gray-500 hover:text-black dark:hover:text-white">
               <LinkSpinner><Icon name="back" className="h-4 w-4" /></LinkSpinner>Semua kategori
             </Link>
           )}

@@ -9,6 +9,7 @@ import Terms from "@/components/Terms";
 import { getSlides } from "@/lib/slides";
 import GameCardGrid from "@/components/GameCardGrid";
 import Image from "next/image";
+import ViewToggle from "@/components/ViewToggle";
 
 type SP = { q?: string; cat?: string; sort?: string; view?: string };
 const BY: Record<string, (a: GameView, b: GameView) => number> = {
@@ -74,7 +75,7 @@ const href = (o: Partial<SP>) => {
   return s ? `/?${s}` : "/";
 };
   const wa = `https://wa.me/${process.env.NEXT_PUBLIC_WA_NUMBER}`;
-  const waiting = process.env.NEXT_PUBLIC_WA_WAITING_URL || wa;
+  const waiting = "https://chat.whatsapp.com/LK2sFu9ThYCIsNTD1RoF2R";
   const tab = "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-2.5 text-sm font-semibold md:gap-2 md:px-5 md:py-3 md:text-base";
 
   return (
@@ -174,34 +175,7 @@ const href = (o: Partial<SP>) => {
     ))}
   </div>
 
-  {/* Ganti view */}
-  <div className="flex shrink-0 items-center gap-0.5 rounded-full bg-gray-100 p-1" role="group" aria-label="Ganti tampilan">
-    <Link
-      href={href({ view: undefined })}
-      aria-label="Tampilan list"
-      aria-pressed={!isGrid}
-      scroll={false}
-      className={`flex h-8 w-8 items-center justify-center rounded-full transition sm:h-9 sm:w-9 ${!isGrid ? "bg-white shadow-sm" : "text-gray-400 hover:text-gray-700"}`}
-    >
-      <svg viewBox="0 0 24 24" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-        <path d="M4 6h16M4 12h16M4 18h16" />
-      </svg>
-    </Link>
-    <Link
-      href={href({ view: "grid" })}
-      aria-label="Tampilan grid"
-      aria-pressed={isGrid}
-      scroll={false}
-      className={`flex h-8 w-8 items-center justify-center rounded-full transition sm:h-9 sm:w-9 ${isGrid ? "bg-white shadow-sm" : "text-gray-400 hover:text-gray-700"}`}
-    >
-      <svg viewBox="0 0 24 24" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round">
-        <rect x="4" y="4" width="6.5" height="6.5" rx="1.5" />
-        <rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5" />
-        <rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5" />
-        <rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5" />
-      </svg>
-    </Link>
-  </div>
+  <ViewToggle isGrid={isGrid} listHref={href({ view: undefined })} gridHref={href({ view: "grid" })} />
 </div>
 
       {list.length === 0 && (
@@ -210,11 +184,11 @@ const href = (o: Partial<SP>) => {
         </p>
       )}
 <div
-  className={
+  className={`transition-opacity duration-200 [html[data-view-loading]_&]:pointer-events-none [html[data-view-loading]_&]:opacity-40 ${
     isGrid
       ? "mt-8 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 xl:grid-cols-4"
       : "mt-8 grid grid-cols-1 gap-5"
-  }
+  }`}
 >
   {list.map((g, i) => (
     <Reveal key={g.id} delay={(i % 2) * 0.08} className="min-w-0">

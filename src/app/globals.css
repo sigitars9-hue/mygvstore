@@ -49,8 +49,8 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: #ffffff;
+  --foreground: #111827;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -81,40 +81,67 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Permukaan kartu/dialog/header (dipakai untuk menimpa bg-white saat dark) */
+  --surface: #ffffff;
+  --shimmer-a: #f3f4f6;
+  --shimmer-b: #e5e7eb;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
+  --background: #0f0f10;
+  --foreground: #f4f4f5;
+  --card: #1a1a1c;
+  --card-foreground: #f4f4f5;
+  --popover: #1a1a1c;
+  --popover-foreground: #f4f4f5;
   --primary: oklch(0.922 0 0);
   --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --secondary: #232326;
+  --secondary-foreground: #f4f4f5;
+  --muted: #232326;
+  --muted-foreground: #a1a1aa;
+  --accent: #232326;
+  --accent-foreground: #f4f4f5;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
+  --border: rgb(255 255 255 / 10%);
+  --input: rgb(255 255 255 / 15%);
   --ring: oklch(0.556 0 0);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar: #1a1a1c;
+  --sidebar-foreground: #f4f4f5;
   --sidebar-primary: oklch(0.488 0.243 264.376);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-accent: #232326;
+  --sidebar-accent-foreground: #f4f4f5;
+  --sidebar-border: rgb(255 255 255 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  --surface: #1a1a1c;
+  --shimmer-a: #232326;
+  --shimmer-b: #2e2e32;
+
+  --color-gray-50: #18181a;
+  --color-gray-100: #232326;
+  --color-gray-200: #2e2e32;
+  --color-gray-300: #44444a;
+  --color-gray-400: #8a8a93;
+  --color-gray-500: #a1a1aa;
+  --color-gray-600: #c4c4cc;
+  --color-gray-700: #d8d8de;
+  --color-gray-800: #e8e8ec;
+  --color-gray-900: #f4f4f5;
+
+  --color-pink-50: rgb(236 72 153 / 15%);
+  --color-pink-100: rgb(236 72 153 / 22%);
+  --color-pink-700: #f9a8d4;
+  --color-emerald-100: rgb(16 185 129 / 20%);
+
+  color-scheme: dark;
 }
 
 @layer base {
@@ -129,13 +156,30 @@
   }
 }
 
+/* ===== Penyesuaian dark mode untuk warna yang tidak ikut skala gray ===== */
+@layer utilities {
+  /* :where() menjaga specificity tetap rendah, jadi hover:bg-* tetap menang */
+  :where(.dark) .bg-white { background-color: var(--surface); }
+  :where(.dark) .bg-white\/90 { background-color: rgb(23 22 46 / 90%); }
+  :where(.dark) .text-\[\#0d0c22\] { color: #f3f4f6; }
+  :where(.dark) .border-white { border-color: var(--surface); }
+
+  /* Tombol gelap (CTA "Lihat Joki", dll) agar tidak menyatu dengan latar */
+  :where(.dark) .bg-\[\#0d0c22\] { background-color: #34335c; }
+  :where(.dark) .bg-\[\#3a3a4d\] { background-color: #34335c; }
+
+  /* Chip aktif (bg-black text-white) jadi pink */
+  :where(.dark) .bg-black { background-color: var(--color-pink-500); }
+  :where(.dark) .border-black { border-color: var(--color-pink-500); }
+}
+
 /* ===== Efek gerak JokiKu ===== */
-@keyframes fade-up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-.fade-up { animation: fade-up .6s cubic-bezier(.2,.7,.2,1) both; animation-delay: var(--d, 0s); }
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: none; }
 }
+.fade-up { animation: fade-up .6s cubic-bezier(.2,.7,.2,1) both; animation-delay: var(--d, 0s); }
+
 @keyframes pop-in {
   from { opacity: 0; transform: scale(0.6); }
   to   { opacity: 1; transform: scale(1); }
@@ -194,8 +238,11 @@ dialog[open].zoom::backdrop { animation: fade-in 0.25s ease-out both; }
 .pop { animation: pop .35s ease-out; }
 
 @keyframes shimmer { to { background-position: -200% 0; } }
-.shimmer { background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 37%, #f3f4f6 63%);
-  background-size: 200% 100%; animation: shimmer 1.4s infinite linear; }
+.shimmer {
+  background: linear-gradient(90deg, var(--shimmer-a) 25%, var(--shimmer-b) 37%, var(--shimmer-a) 63%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite linear;
+}
 
 /* Teks pink yang bergeser naik halus (hanya kata pink yang bergerak) */
 .word-box { display: inline-block; height: 1.25em; overflow: hidden; vertical-align: bottom; }
@@ -212,6 +259,9 @@ dialog[open].zoom::backdrop { animation: fade-in 0.25s ease-out both; }
 /* Semua tombol terasa "menekan" */
 button, a[class*="rounded-full"] { transition: transform .15s ease, background-color .2s ease, box-shadow .2s ease; }
 button:not(:disabled):active, a[class*="rounded-full"]:active { transform: scale(.97); }
+
+/* Pindah tema terasa halus */
+body { transition: background-color .2s ease, color .2s ease; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }

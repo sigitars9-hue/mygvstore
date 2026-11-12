@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/Icons";
 import type { CsEntry, NavGame } from "@/lib/cs";
+import ThemeToggle from "@/components/ThemeToggle";
 
 type Item = [label: string, href: string];
 const DEFAULT_WA = process.env.NEXT_PUBLIC_WA_NUMBER;
@@ -87,7 +88,8 @@ export default function Header({ games, cs }: { games: NavGame[]; cs: CsEntry[] 
             </div>
           ))}
         </nav>
-
+<div className="ml-auto flex items-center gap-1">
+  <ThemeToggle />
         {/* Chat CS */}
         <div ref={chatRef} className="relative ml-auto">
 <button
@@ -105,7 +107,7 @@ export default function Header({ games, cs }: { games: NavGame[]; cs: CsEntry[] 
     className="h-8 w-8"
   />
 </button>
-
+</div>
           <div
             className={`absolute right-0 top-full z-40 mt-2 w-[min(20rem,calc(100vw-2rem))] origin-top-right rounded-2xl border border-gray-100 bg-white shadow-2xl transition duration-200 ${
               chat ? "visible translate-y-0 opacity-100" : "invisible -translate-y-1 opacity-0"
