@@ -5,12 +5,13 @@ import { rp, hasPromo, discountPct } from "@/lib/utils";
 import { Icon } from "@/components/Icons";
 import AdminShell from "@/components/admin/AdminShell";
 import SaveForm, { Submit } from "@/components/admin/SaveForm";
-import { PageHeader, stagger } from "@/components/admin/AdminKit";
+import { PageHeader } from "@/components/admin/AdminKit";
 import { LinkSpinner, LinkFade } from "@/components/LinkPending";
 import { addGame } from "@/app/actions/admin";
-import { inp, card, lbl } from "@/components/admin/ui";
+import { inp, lbl } from "@/components/admin/ui";
 
 type Stat = { jokis: number; services: number; min: number; max: number; promo: number; maxPct: number };
+const panel = "rounded-xl border border-gray-200 bg-white";
 
 export default async function AdminGames() {
   await requireAdmin();
@@ -27,12 +28,10 @@ export default async function AdminGames() {
     if (!s) { s = { jokis: 0, services: 0, min: Infinity, max: 0, promo: 0, maxPct: 0 }; stats.set(gid, s); }
     return s;
   };
-
   (jk ?? []).forEach((j) => {
     jokiGame.set(j.id, j.game_id);
     if (j.is_active) stat(j.game_id).jokis++;
   });
-
   (sv ?? []).forEach((x) => {
     const gid = x.joki_id ? jokiGame.get(x.joki_id) : undefined;
     if (!gid || !x.is_active) return;
@@ -44,81 +43,99 @@ export default async function AdminGames() {
   });
 
   const list = games ?? [];
-  const totalPromo = [...stats.values()].reduce((a, s) => a + s.promo, 0);
+  const all = [...stats.values()];
+  const totals = {
+    jokis: all.reduce((a, s) => a + s.jokis, 0),
+    services: all.reduce((a, s) => a + s.services, 0),
+    promo: all.reduce((a, s) => a + s.promo, 0),
+  };
+  const summary = [
+    { label: "Game", value: list.length },
+    { label: "Joki aktif", value: totals.jokis },
+    { label: "Layanan aktif", value: totals.services },
+    { label: "Promo", value: totals.promo, red: totals.promo > 0 },
+  ];
 
   return (
     <AdminShell active="games">
-      <PageHeader title="Game & Harga" desc="Pilih game untuk mengubah tampilan, joki, dan daftar harganya.">
-        {totalPromo > 0 && (
-          <span className="animate-pop-in flex items-center gap-1.5 rounded-full bg-red-50 px-3.5 py-2 text-sm font-bold text-red-600">
-            <Icon name="coin" className="h-4 w-4" />{totalPromo} layanan promo aktif
-          </span>
-        )}
-      </PageHeader>
+      <PageHeader title="Game & Harga" desc="Pilih game untuk mengubah tampilan, joki, dan daftar harganya." />
 
-      <div className={`${card} mt-6 divide-y divide-gray-100 overflow-hidden !p-0`}>
-        {list.map((g, i) => {
+      <dl className="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-gray-200 bg-gray-200 sm:grid-cols-4">
+        {summary.map((x) => (
+          <div key={x.label} className="bg-white px-4 py-3">
+            <dt className="text-xs text-gray-500">{x.label}</dt>
+            <dd className={`mt-0.5 text-lg font-semibold ${x.red ? "text-red-600" : "text-[#0d0c22]"}`}>{x.value}</dd>
+          </div>
+        ))}
+      </dl>
+
+      <details className={`${panel} group mt-4`}>
+        <summary className="flex cursor-pointer list-none items-center gap-2 px-4 py-3 text-sm font-semibold [&::-webkit-details-marker]:hidden">
+          <Icon name="plus" className="h-4 w-4" />Tambah game
+          <Icon name="chevron" className="ml-auto h-4 w-4 text-gray-400 transition-transform group-open:rotate-180" />
+        </summary>
+        <SaveForm action={addGame} resetOnOk className="grid gap-4 border-t border-gray-200 p-4 sm:grid-cols-2">
+          <div>
+            <label className={lbl}>Nama game</label>
+            <input name="name" required placeholder="mis. Arknights" className={inp} />
+          </div>
+          <div>
+            <label className={lbl}>Slug URL (kosongkan untuk otomatis)</label>
+            <input name="slug" placeholder="arknights" className={inp} />
+          </div>
+          <label className="flex items-center gap-2 text-sm font-medium sm:col-span-2">
+            <input type="checkbox" name="is_soon" className="h-4 w-4 accent-black" />Segera hadir
+          </label>
+          <div className="col-span-full"><Submit>Tambah game</Submit></div>
+        </SaveForm>
+      </details>
+
+      <div className={`${panel} mt-4 divide-y divide-gray-100 overflow-hidden`}>
+        {list.map((g) => {
           const s = stats.get(g.id);
-          const hasPrice = !!s && s.services > 0;
-          const range = hasPrice ? (s.min === s.max ? rp(s.min) : `${rp(s.min)} – ${rp(s.max)}`) : null;
-
+          const range = s && s.services > 0 ? (s.min === s.max ? rp(s.min) : `${rp(s.min)} – ${rp(s.max)}`) : null;
           return (
-            <Link key={g.slug} href={`/admin/games/${g.slug}`} style={stagger(i)}
-              className="group animate-fade-up flex items-center gap-4 p-4 transition hover:bg-gradient-to-r hover:from-pink-50/60 hover:to-transparent active:scale-[0.995] sm:px-6">
-              <LinkFade className="flex min-w-0 flex-1 items-center gap-4">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#0d0c22] font-black text-white ring-2 ring-transparent transition group-hover:scale-105 group-hover:ring-pink-300">
+            <Link key={g.slug} href={`/admin/games/${g.slug}`} className="group flex items-center gap-3 px-4 py-3 transition hover:bg-gray-50 sm:px-5">
+              <LinkFade className="flex min-w-0 flex-1 items-center gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[#0d0c22] font-bold text-white sm:h-12 sm:w-12">
                   {g.icon_url
                     // eslint-disable-next-line @next/next/no-img-element
                     ? <img src={g.icon_url} alt="" className="h-full w-full object-cover" />
                     : g.name.charAt(0)}
                 </span>
-
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-bold text-[#0d0c22]">{g.name}</p>
-                  <p className="text-xs text-gray-500">
-                    {(g.categories ?? []).length} kategori · {s?.jokis ?? 0} joki aktif · {s?.services ?? 0} layanan · CS {g.cs_name || "Admin"}
-                  </p>
-                  <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
-                    <Icon name="coin" className="h-3.5 w-3.5 text-gray-400" />
-                    {range ? (
-                      <span className={`font-semibold ${s!.promo > 0 ? "text-red-600" : "text-[#0d0c22]"}`}>{range}</span>
-                    ) : (
-                      <span className="text-gray-400">Belum ada harga</span>
-                    )}
-                    {s && s.promo > 0 && (
-                      <span className="rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-extrabold text-white">
-                        {s.promo} PROMO · s/d {s.maxPct}%
-                      </span>
-                    )}
-                  </p>
-                </div>
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-center gap-2">
+                    <b className="truncate text-[15px] font-semibold text-[#0d0c22]">{g.name}</b>
+                    {g.is_soon && <span className="shrink-0 rounded-md bg-pink-500 px-1.5 py-0.5 text-[11px] font-bold text-white">Segera</span>}
+                  </span>
+                  <span className="block truncate text-xs text-gray-500">
+                    {(g.categories ?? []).length} kategori · {s?.jokis ?? 0} joki · {s?.services ?? 0} layanan · CS {g.cs_name || "Admin"}
+                  </span>
+                  <span className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs sm:hidden">
+                    {range
+                      ? <span className={`font-semibold ${s!.promo > 0 ? "text-red-600" : "text-gray-700"}`}>{range}</span>
+                      : <span className="text-gray-400">Belum ada harga</span>}
+                  </span>
+                </span>
+                <span className="hidden flex-col items-end text-right text-sm leading-tight sm:flex">
+                  {range
+                    ? <span className={`font-semibold ${s!.promo > 0 ? "text-red-600" : "text-gray-700"}`}>{range}</span>
+                    : <span className="text-gray-400">Belum ada harga</span>}
+                </span>
+                {s && s.promo > 0 && (
+                  <span className="shrink-0 rounded-md bg-red-50 px-1.5 py-0.5 text-[11px] font-semibold text-red-600">
+                    {s.promo} promo · {s.maxPct}%
+                  </span>
+                )}
               </LinkFade>
-
-              {g.is_soon && <span className="rounded-lg bg-pink-500 px-2.5 py-1 text-xs font-extrabold text-white">SEGERA</span>}
               <LinkSpinner>
-                <Icon name="right" className="h-5 w-5 text-gray-300 transition group-hover:translate-x-1 group-hover:text-[#0d0c22]" />
+                <Icon name="right" className="h-4 w-4 shrink-0 text-gray-300 transition group-hover:translate-x-0.5 group-hover:text-[#0d0c22]" />
               </LinkSpinner>
             </Link>
           );
         })}
-        {list.length === 0 && <p className="p-6 text-sm text-gray-500">Belum ada game. Tambahkan lewat form di bawah.</p>}
+        {list.length === 0 && <p className="px-5 py-10 text-center text-sm text-gray-500">Belum ada game. Tambahkan lewat tombol di atas.</p>}
       </div>
-
-      <SaveForm action={addGame} resetOnOk className={`${card} animate-fade-up mt-4 grid gap-4 sm:grid-cols-2`}>
-        <h2 className="col-span-full text-lg font-bold">Tambah game</h2>
-        <div>
-          <label className={lbl}>Nama game</label>
-          <input name="name" required placeholder="mis. Arknights" className={inp} />
-        </div>
-        <div>
-          <label className={lbl}>Slug URL (kosongkan untuk otomatis)</label>
-          <input name="slug" placeholder="arknights" className={inp} />
-        </div>
-        <label className="flex items-center gap-2 text-sm font-medium">
-          <input type="checkbox" name="is_soon" className="h-4 w-4 accent-black" />Segera hadir
-        </label>
-        <div className="col-span-full"><Submit>Tambah game</Submit></div>
-      </SaveForm>
     </AdminShell>
   );
 }

@@ -1,6 +1,7 @@
+// text-base di HP mencegah iOS memperbesar layar saat input difokuskan
 export const inp =
-  "w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm outline-none transition hover:border-gray-300 focus:border-[#0d0c22] focus:ring-4 focus:ring-pink-100";
-export const card = "rounded-3xl border border-gray-200 bg-white p-5 transition-shadow sm:p-6";
-export const lbl = "mb-1 block text-xs font-semibold text-gray-500";
+  "w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-base outline-none transition placeholder:text-gray-400 hover:border-gray-400 focus:border-[#0d0c22] focus:ring-2 focus:ring-gray-200 sm:text-sm";
+export const card = "rounded-xl border border-gray-200 bg-white p-4 sm:p-5";
+export const lbl = "mb-1 block text-xs font-medium text-gray-600";
 export const btn =
-  "inline-flex items-center gap-2 rounded-full bg-[#0d0c22] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-pink-500 hover:shadow-lg hover:shadow-pink-500/30 disabled:opacity-60 disabled:hover:bg-[#0d0c22] disabled:hover:shadow-none";
+  "inline-flex items-center justify-center gap-2 rounded-full bg-[#0d0c22] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-black disabled:opacity-60";
