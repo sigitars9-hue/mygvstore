@@ -7,11 +7,10 @@ import { Icon } from "@/components/Icons";
 import HeroSlider from "@/components/HeroSlider";
 import Terms from "@/components/Terms";
 import { getSlides } from "@/lib/slides";
+import GameCardGrid from "@/components/GameCardGrid";
+import Image from "next/image";
 
-type SP = { q?: string; cat?: string; sort?: string };
-const SORTS: Record<string, string> = {
-  populer: "Terpopuler", rating: "Rating tertinggi", termurah: "Harga terendah", nama: "Nama A–Z",
-};
+type SP = { q?: string; cat?: string; sort?: string; view?: string };
 const BY: Record<string, (a: GameView, b: GameView) => number> = {
   populer: (a, b) => b.projects - a.projects,
   rating: (a, b) => (b.rating ?? 0) - (a.rating ?? 0),
@@ -39,7 +38,8 @@ const tokenHitsSvc = (s: Svc, t: string) => {
 };
 
 export default async function Home({ searchParams }: { searchParams: Promise<SP> }) {
-  const { q, cat, sort = "populer" } = await searchParams;
+  const { q, cat, sort = "populer", view } = await searchParams;
+const isGrid = view === "grid";
   const { games, jokis } = await loadCatalog();
   const slides = await getSlides();
 
@@ -67,13 +67,14 @@ export default async function Home({ searchParams }: { searchParams: Promise<SP>
     })
     .sort((a, b) => Number(a.is_soon) - Number(b.is_soon) || (BY[sort] ?? BY.populer)(a, b));
 
-  const href = (o: Partial<SP>) => {
-    const p = new URLSearchParams();
-    Object.entries({ q, cat, sort, ...o }).forEach(([k, v]) => v && p.set(k, v));
-    const s = p.toString();
-    return s ? `/?${s}` : "/";
-  };
+const href = (o: Partial<SP>) => {
+  const p = new URLSearchParams();
+  Object.entries({ q, cat, sort, view, ...o }).forEach(([k, v]) => v && p.set(k, v));
+  const s = p.toString();
+  return s ? `/?${s}` : "/";
+};
   const wa = `https://wa.me/${process.env.NEXT_PUBLIC_WA_NUMBER}`;
+  const waiting = process.env.NEXT_PUBLIC_WA_WAITING_URL || wa;
   const tab = "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-2.5 text-sm font-semibold md:gap-2 md:px-5 md:py-3 md:text-base";
 
   return (
@@ -96,21 +97,47 @@ export default async function Home({ searchParams }: { searchParams: Promise<SP>
           <HeroSlider slides={slides} />
         </div>
 
-        <Link
-          href="/testimoni"
-          style={{ "--d": "0.35s" } as React.CSSProperties}
-          className="fade-up group inline-flex items-center gap-2 self-center rounded-full border border-gray-200 bg-white py-1.5 pl-1.5 pr-4 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-pink-300 hover:shadow-lg hover:shadow-pink-100 lg:col-start-1 lg:row-start-2 lg:gap-3 lg:self-start lg:py-2 lg:pl-2 lg:pr-5"
-        >
-          <span className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-pink-400 to-pink-600 text-white lg:h-10 lg:w-10">
-            <span className="absolute inset-0 animate-ping rounded-full bg-pink-400/40 [animation-duration:2.5s] motion-reduce:animate-none" />
-            <Icon name="star" className="relative h-4 w-4 transition-transform duration-300 group-hover:rotate-[72deg] group-hover:scale-110 lg:h-5 lg:w-5" />
-          </span>
-          <span className="flex flex-col text-left leading-tight">
-            <b className="text-sm text-[#0d0c22] lg:text-[15px]">Testimoni</b>
-            <span className="hidden text-xs text-gray-500 sm:block">Kata pelanggan kami</span>
-          </span>
-          <Icon name="right" className="h-3.5 w-3.5 text-gray-400 transition duration-300 group-hover:translate-x-1 group-hover:text-pink-500 lg:h-4 lg:w-4" />
-        </Link>
+<div className="flex flex-col items-center gap-3 lg:col-start-1 lg:row-start-2 lg:items-start lg:self-start">
+  <Link
+    href="/testimoni"
+    style={{ "--d": "0.35s" } as React.CSSProperties}
+    className="fade-up group inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white py-1.5 pl-1.5 pr-4 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-pink-300 hover:shadow-lg hover:shadow-pink-100 lg:gap-3 lg:py-2 lg:pl-2 lg:pr-5"
+  >
+    <span className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-pink-400 to-pink-600 text-white lg:h-10 lg:w-10">
+      <span className="absolute inset-0 animate-ping rounded-full bg-pink-400/40 [animation-duration:2.5s] motion-reduce:animate-none" />
+      <Icon name="star" className="relative h-4 w-4 transition-transform duration-300 group-hover:rotate-[72deg] group-hover:scale-110 lg:h-5 lg:w-5" />
+    </span>
+    <span className="flex flex-col text-left leading-tight">
+      <b className="text-sm text-[#0d0c22] lg:text-[15px]">Testimoni</b>
+      <span className="hidden text-xs text-gray-500 sm:block">Kata pelanggan kami</span>
+    </span>
+    <Icon name="right" className="h-3.5 w-3.5 text-gray-400 transition duration-300 group-hover:translate-x-1 group-hover:text-pink-500 lg:h-4 lg:w-4" />
+  </Link>
+
+  <a
+    href={waiting}
+    target="_blank"
+    rel="noreferrer"
+    style={{ "--d": "0.45s" } as React.CSSProperties}
+    className="fade-up group inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white py-1.5 pl-1.5 pr-4 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-lg hover:shadow-emerald-100 lg:gap-3 lg:py-2 lg:pl-2 lg:pr-5"
+  >
+    <span className="relative flex h-8 w-8 shrink-0 items-center justify-center lg:h-10 lg:w-10">
+      <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400/40 [animation-duration:2.5s] motion-reduce:animate-none" />
+      <Image
+        src="/icon/wa.png"
+        alt=""
+        width={40}
+        height={40}
+        className="relative h-8 w-8 transition-transform duration-300 group-hover:scale-110 lg:h-10 lg:w-10"
+      />
+    </span>
+    <span className="flex flex-col text-left leading-tight">
+      <b className="text-sm text-[#0d0c22] lg:text-[15px]">Ruang Tunggu</b>
+      <span className="hidden text-xs text-gray-500 sm:block">Gabung &amp; pantau antrian</span>
+    </span>
+    <Icon name="right" className="h-3.5 w-3.5 text-gray-400 transition duration-300 group-hover:translate-x-1 group-hover:text-emerald-500 lg:h-4 lg:w-4" />
+  </a>
+</div>
       </section>
 
       <div id="game" className="flex items-center gap-1 overflow-x-auto scroll-mt-4 pt-2 [scrollbar-width:none] md:flex-wrap md:gap-2 md:overflow-visible [&::-webkit-scrollbar]:hidden">
@@ -130,48 +157,79 @@ export default async function Home({ searchParams }: { searchParams: Promise<SP>
         <button aria-label="Cari" className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-pink-500 text-white hover:bg-pink-600"><Icon name="search" /></button>
       </form>
 
-      <div className="mt-5 flex items-center gap-3">
-        <div className="flex min-w-0 flex-1 items-center gap-3 overflow-x-auto pb-1">
-          <b className="shrink-0 text-sm">Populer:</b>
-          {cats.map((c) => (
-            <Link key={c} href={href({ cat: cat === c ? undefined : c })}
-              className={`shrink-0 rounded-full border px-4 py-2 text-sm ${cat === c ? "border-black bg-black text-white" : "border-gray-200 hover:border-gray-400"}`}>
-              {c}
-            </Link>
-          ))}
-        </div>
-        <details className="relative shrink-0">
-          <summary className="flex cursor-pointer list-none items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium [&::-webkit-details-marker]:hidden">
-            {SORTS[sort] ?? SORTS.populer}<Icon name="chevron" className="h-4 w-4" />
-          </summary>
-          <div className="absolute right-0 z-20 mt-2 w-48 rounded-xl border bg-white p-1 shadow-lg">
-            {Object.entries(SORTS).map(([k, v]) => (
-              <Link key={k} href={href({ sort: k })} className="block rounded-lg px-3 py-2 text-sm hover:bg-gray-100">{v}</Link>
-            ))}
-          </div>
-        </details>
-      </div>
+<div className="mt-5 flex items-center gap-2 sm:gap-3">
+  <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto pr-6 [-ms-overflow-style:none] [scrollbar-width:none] [mask-image:linear-gradient(to_right,#000_88%,transparent)] sm:gap-3 sm:[mask-image:none] [&::-webkit-scrollbar]:hidden">
+    <b className="shrink-0 text-sm">Populer:</b>
+    {cats.map((c) => (
+      <Link
+        key={c}
+        href={href({ cat: cat === c ? undefined : c })}
+        scroll={false}
+        className={`shrink-0 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-sm sm:px-4 sm:py-2 ${
+          cat === c ? "border-black bg-black text-white" : "border-gray-200 hover:border-gray-400"
+        }`}
+      >
+        {c}
+      </Link>
+    ))}
+  </div>
+
+  {/* Ganti view */}
+  <div className="flex shrink-0 items-center gap-0.5 rounded-full bg-gray-100 p-1" role="group" aria-label="Ganti tampilan">
+    <Link
+      href={href({ view: undefined })}
+      aria-label="Tampilan list"
+      aria-pressed={!isGrid}
+      scroll={false}
+      className={`flex h-8 w-8 items-center justify-center rounded-full transition sm:h-9 sm:w-9 ${!isGrid ? "bg-white shadow-sm" : "text-gray-400 hover:text-gray-700"}`}
+    >
+      <svg viewBox="0 0 24 24" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <path d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </Link>
+    <Link
+      href={href({ view: "grid" })}
+      aria-label="Tampilan grid"
+      aria-pressed={isGrid}
+      scroll={false}
+      className={`flex h-8 w-8 items-center justify-center rounded-full transition sm:h-9 sm:w-9 ${isGrid ? "bg-white shadow-sm" : "text-gray-400 hover:text-gray-700"}`}
+    >
+      <svg viewBox="0 0 24 24" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round">
+        <rect x="4" y="4" width="6.5" height="6.5" rx="1.5" />
+        <rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5" />
+        <rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5" />
+        <rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5" />
+      </svg>
+    </Link>
+  </div>
+</div>
 
       {list.length === 0 && (
         <p className="py-16 text-center text-gray-500">
           {q ? <>Tidak ada hasil untuk “{q}”.</> : "Game tidak ditemukan."}
         </p>
       )}
-      <div className="mt-8 grid grid-cols-1 gap-5">
-        {list.map((g, i) => (
-          <Reveal key={g.id} delay={(i % 2) * 0.08} className="min-w-0">
-            <GameCard g={g} i={i} />
-            {matched.get(g.id) && (
-              <div className="mt-2 flex flex-wrap items-center gap-2 px-2 text-xs text-gray-500">
-                <span className="font-semibold text-gray-700">Cocok:</span>
-                {matched.get(g.id)!.map((m) => (
-                  <span key={m} className="rounded-full bg-pink-50 px-3 py-1 text-pink-700">{m}</span>
-                ))}
-              </div>
-            )}
-          </Reveal>
-        ))}
-      </div>
+<div
+  className={
+    isGrid
+      ? "mt-8 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 xl:grid-cols-4"
+      : "mt-8 grid grid-cols-1 gap-5"
+  }
+>
+  {list.map((g, i) => (
+    <Reveal key={g.id} delay={(i % 2) * 0.08} className="min-w-0">
+      {isGrid ? <GameCardGrid g={g} i={i} /> : <GameCard g={g} i={i} />}
+      {matched.get(g.id) && (
+        <div className="mt-2 flex flex-wrap items-center gap-2 px-2 text-xs text-gray-500">
+          <span className="font-semibold text-gray-700">Cocok:</span>
+          {matched.get(g.id)!.map((m) => (
+            <span key={m} className="rounded-full bg-pink-50 px-3 py-1 text-pink-700">{m}</span>
+          ))}
+        </div>
+      )}
+    </Reveal>
+  ))}
+</div>
     </>
   );
 }

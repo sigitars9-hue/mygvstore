@@ -90,20 +90,21 @@ export default function Header({ games, cs }: { games: NavGame[]; cs: CsEntry[] 
 
         {/* Chat CS */}
         <div ref={chatRef} className="relative ml-auto">
-          <button
-            type="button"
-            aria-label="Chat CS"
-            aria-expanded={chat}
-            onClick={() => { setChat(!chat); setOpen(false); }}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-[#0d0c22] text-white transition hover:bg-black sm:h-auto sm:w-auto sm:gap-2 sm:px-5 sm:py-3"
-          >
-            <span className="relative">
-              <Icon name="chat" className="h-5 w-5 sm:h-4 sm:w-4" />
-              <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full border-2 border-[#0d0c22] bg-emerald-400" />
-            </span>
-            <span className="hidden text-sm font-bold sm:inline">Chat CS</span>
-            <Icon name="chevron" className={`hidden h-4 w-4 transition-transform duration-200 sm:block ${chat ? "rotate-180" : ""}`} />
-          </button>
+<button
+  type="button"
+  aria-label="Chat CS"
+  aria-expanded={chat}
+  onClick={() => { setChat(!chat); setOpen(false); }}
+  className="flex h-10 w-10 items-center justify-center transition hover:scale-110"
+>
+  <Image
+    src="/icon/wa.png"
+    alt=""
+    width={32}
+    height={32}
+    className="h-8 w-8"
+  />
+</button>
 
           <div
             className={`absolute right-0 top-full z-40 mt-2 w-[min(20rem,calc(100vw-2rem))] origin-top-right rounded-2xl border border-gray-100 bg-white shadow-2xl transition duration-200 ${
