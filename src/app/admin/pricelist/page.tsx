@@ -168,7 +168,7 @@ export default async function AdminPricelist({ searchParams }: { searchParams: P
           const promoCount = items.filter(hasPromo).length;
           const eff = rangeOf(items.map((s) => s.price));
           const base = rangeOf(items.map((s) => (hasPromo(s) ? s.original_price! : s.price)));
-          const img = catImgs[name] || items.find((s) => s.image_url)?.image_url || g.icon_url || GAME_ICONS[g.slug] || null;
+          const img = catImgs[name] || g.icon_url || GAME_ICONS[g.slug] || null;
 
           // Urutan tampil seluruh kategori, dipakai tombol naik/turun
           const subs = subGroups(items);

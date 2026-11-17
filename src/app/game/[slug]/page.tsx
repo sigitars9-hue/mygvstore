@@ -150,7 +150,7 @@ const hayOf = (s: Service) => `${s.name} ${shortName(s)} ${catOf(s)} ${hasPromo(
           <h2 className="mb-3 text-lg font-bold text-[#0d0c22]">Kategori layanan</h2>
           <ul className="divide-y divide-gray-100 overflow-hidden rounded-3xl border border-gray-200 bg-white">
             {cats.map(([name, list], i) => {
-              const img = catImgs[name] || list.find((s) => s.image_url)?.image_url || gameIcon;
+              const img = catImgs[name] || gameIcon;
               const min = Math.min(...list.map((s) => s.price));
               return (
                 <li key={name} className="animate-fade-up" style={{ "--i": i } as React.CSSProperties}>
