@@ -37,7 +37,54 @@ export async function signOut() {
   await sb.auth.signOut();
   redirect("/admin/login");
 }
+/* ---------- Limited Offers ---------- */
+function offerFields(fd: FormData) {
+  const image_url = str(fd, "image_url");
+  if (!image_url) return { error: "Unggah gambar dulu" } as const;
+  if (!urlOk(image_url)) return { error: "URL gambar tidak valid" } as const;
+  const rawEnd = str(fd, "ends_at");
+const ends = rawEnd ? new Date(rawEnd) : null;
+if (ends && isNaN(ends.getTime())) return { error: "Tanggal berakhir tidak valid" } as const;
+  return {
+values: {
+  image_url,
+  alt: str(fd, "alt"),
+  label: str(fd, "label").slice(0, 24) || null,
+  href: str(fd, "href") || null,
+  sort: Math.round(Number(fd.get("sort"))) || 0,
+  is_active: fd.get("is_active") === "on",
+  ends_at: ends ? ends.toISOString() : null,
+},
+  } as const;
+}
 
+export async function addOffer(fd: FormData): Promise<R> {
+  await requireAdmin();
+  const f = offerFields(fd);
+  if ("error" in f) return { error: f.error };
+  const { error } = await db.from("offers").insert(f.values);
+  if (error) return { error: error.message };
+  publish();
+  return { ok: true };
+}
+
+export async function saveOffer(fd: FormData): Promise<R> {
+  await requireAdmin();
+  const f = offerFields(fd);
+  if ("error" in f) return { error: f.error };
+  const { error } = await db.from("offers").update(f.values).eq("id", str(fd, "id"));
+  if (error) return { error: error.message };
+  publish();
+  return { ok: true };
+}
+
+export async function deleteOffer(fd: FormData): Promise<R> {
+  await requireAdmin();
+  const { error } = await db.from("offers").delete().eq("id", str(fd, "id"));
+  if (error) return { error: error.message };
+  publish();
+  return { ok: true };
+}
 /* ---------- Upload ke R2 ---------- */
 const EXT: Record<string, string> = { "image/webp": "webp", "image/png": "png", "image/jpeg": "jpg" };
 

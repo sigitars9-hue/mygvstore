@@ -10,6 +10,9 @@ import { getSlides } from "@/lib/slides";
 import GameCardGrid from "@/components/GameCardGrid";
 import Image from "next/image";
 import ViewToggle from "@/components/ViewToggle";
+import LimitedOffers from "@/components/LimitedOffers";
+import { getOffers } from "@/lib/offers";
+
 
 type SP = { q?: string; cat?: string; sort?: string; view?: string };
 const BY: Record<string, (a: GameView, b: GameView) => number> = {
@@ -43,7 +46,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<SP>
 const isGrid = view === "grid";
   const { games, jokis } = await loadCatalog();
   const slides = await getSlides();
-
+// di dalam Home(), dekat getSlides():
+const offers = await getOffers();
   const freq = new Map<string, number>();
   games.forEach((g) => g.categories.forEach((c) => freq.set(c, (freq.get(c) ?? 0) + 1)));
   const cats = [...freq.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6).map(([c]) => c);
@@ -183,7 +187,9 @@ const href = (o: Partial<SP>) => {
           {q ? <>Tidak ada hasil untuk “{q}”.</> : "Game tidak ditemukan."}
         </p>
       )}
+      {!q && !cat && <LimitedOffers offers={offers} />}
 <div
+
   className={`transition-opacity duration-200 [html[data-view-loading]_&]:pointer-events-none [html[data-view-loading]_&]:opacity-40 ${
     isGrid
       ? "mt-8 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 xl:grid-cols-4"
