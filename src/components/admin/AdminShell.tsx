@@ -10,6 +10,7 @@ const TABS: readonly (readonly [string, string, string, IconName])[] = [
   ["banners", "/admin/banners", "Banner", "image"],
   ["testimoni", "/admin/testimoni", "Testimoni", "star"],
   ["terms", "/admin/terms", "S&K", "receipt"],
+  ["offers", "/admin/offer", "Limited Offers", "image"],
 ];
 
 const item = (on: boolean) =>

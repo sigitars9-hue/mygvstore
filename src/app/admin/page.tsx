@@ -10,22 +10,24 @@ import { LinkSpinner, LinkFade } from "@/components/LinkPending";
 export default async function AdminHome() {
   await requireAdmin();
   const head = { count: "exact", head: true } as const;
-  const [g, s, j, b, t] = await Promise.all([
+  const [g, s, j, b, t, o] = await Promise.all([
     db.from("games").select("*", head),
     db.from("services").select("*", head).eq("is_active", true),
     db.from("jokis").select("*", head).eq("is_active", true),
     db.from("banners").select("*", head).eq("is_active", true),
     db.from("testimonials").select("*", head).eq("is_active", true),
+    db.from("offers").select("*", head).eq("is_active", true),
   ]);
   const r2ok = !!(process.env.R2_ACCOUNT_ID && process.env.R2_ACCESS_KEY_ID && process.env.R2_SECRET_ACCESS_KEY && process.env.R2_BUCKET && process.env.R2_PUBLIC_URL);
 
-  const menu: { href: string; icon: IconName; title: string; desc: string }[] = [
-    { href: "/admin/games", icon: "list", title: "Game & Harga", desc: "Ubah ikon, kategori, joki, PIC/CS, dan daftar harga." },
-    { href: "/admin/pricelist", icon: "coin", title: "Pricelist", desc: "Atur harga, gambar, dan pilihan tiap layanan." },
-    { href: "/admin/banners", icon: "image", title: "Banner", desc: "Tambah, urutkan, atau ganti banner di halaman utama." },
-    { href: "/admin/testimoni", icon: "star", title: "Testimoni", desc: "Kelola komentar pelanggan di halaman testimoni." },
-    { href: "/admin/terms", icon: "receipt", title: "Syarat & Ketentuan", desc: "Ubah poin S&K yang tampil di situs." },
-  ];
+const menu: { href: string; icon: IconName; title: string; desc: string }[] = [
+  { href: "/admin/games", icon: "list", title: "Game & Harga", desc: "Ubah ikon, kategori, joki, PIC/CS, dan daftar harga." },
+  { href: "/admin/pricelist", icon: "coin", title: "Pricelist", desc: "Atur harga, gambar, dan pilihan tiap layanan." },
+  { href: "/admin/banners", icon: "image", title: "Banner", desc: "Tambah, urutkan, atau ganti banner di halaman utama." },
+  { href: "/admin/offer", icon: "image", title: "Limited Offers", desc: "Atur gambar promo, label, dan hitung mundur di atas daftar game." },
+  { href: "/admin/testimoni", icon: "star", title: "Testimoni", desc: "Kelola komentar pelanggan di halaman testimoni." },
+  { href: "/admin/terms", icon: "receipt", title: "Syarat & Ketentuan", desc: "Ubah poin S&K yang tampil di situs." },
+];
 
   return (
     <AdminShell active="home">
@@ -64,6 +66,7 @@ export default async function AdminHome() {
         <b className="block text-lg text-[#0d0c22]">{c.title}</b>
         <span className="text-sm text-gray-600">{c.desc}</span>
         {c.href === "/admin/testimoni" && <span className="mt-1 block text-xs font-semibold text-pink-600">{t.count ?? 0} tampil</span>}
+        {c.href === "/admin/offers" && <span className="mt-1 block text-xs font-semibold text-pink-600">{o.count ?? 0} aktif</span>}
       </span>
     </LinkFade>
     <LinkSpinner>
