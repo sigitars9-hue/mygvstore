@@ -1,81 +1,101 @@
-import { requireAdmin } from "@/lib/auth";
+import type { Metadata } from "next";
+import Link from "next/link";
 import { supabaseAdmin as db } from "@/lib/supabase/admin";
 import { Icon } from "@/components/Icons";
-import AdminShell from "@/components/admin/AdminShell";
-import SaveForm, { Submit, DeleteButton } from "@/components/admin/SaveForm";
-import { TestiPreview } from "@/components/admin/FormPreview";
-import { PageHeader } from "@/components/admin/AdminKit";
-import { addTestimonial, saveTestimonial, deleteTestimonial } from "@/app/actions/admin";
-import { inp, lbl } from "@/components/admin/ui";
+import InstagramEmbed from "@/components/InstagramEmbed";
 
-const panel = "rounded-xl border border-gray-200 bg-white";
+export const metadata: Metadata = {
+  title: "Testimoni | Mygvstore",
+  description: "Komentar dan pengalaman pelanggan Mygvstore.",
+};
 
-const fields = (t?: any) => (
-  <>
-    <div>
-      <label className={lbl}>Username (tanpa @)</label>
-      <input name="username" defaultValue={t?.username} required className={inp} />
-    </div>
-    <div>
-      <label className={lbl}>Urutan (kecil tampil dulu)</label>
-      <input name="sort" type="number" defaultValue={t?.sort ?? 0} className={inp} />
-    </div>
-    <div className="sm:col-span-2">
-      <label className={lbl}>Isi komentar</label>
-      <textarea name="body" rows={3} defaultValue={t?.body} required className={inp} />
-    </div>
-    <label className="flex items-center gap-2 text-sm font-medium sm:col-span-2">
-      <input type="checkbox" name="is_active" defaultChecked={t ? t.is_active : true} className="h-4 w-4 accent-black" />Tampil
-    </label>
-  </>
-);
+export const revalidate = 60;
 
-export default async function AdminTestimoni() {
-  await requireAdmin();
-  const { data } = await db.from("testimonials").select("*").order("sort").order("created_at");
-  const list = data ?? [];
+const IG_POST = "https://www.instagram.com/p/C0s1Dgbx52i/";
+
+type Testi = { id: string | number; username: string; body: string };
+
+// Dipakai kalau tabel testimonials masih kosong
+const FALLBACK: Testi[] = [
+  {
+    id: "f1",
+    username: "hbb_almaula",
+    body: "ini udah yg ke 5 dan ttp amanah woe, asli ini gacor jir, respect and recommended banget lah",
+  },
+  {
+    id: "f2",
+    username: "rath_rust26",
+    body: "Third(?) time ordering here, aman cepat satset, kelar 🔥",
+  },
+  {
+    id: "f3",
+    username: "arnnmen",
+    body: "trustedd 👍 👍",
+  },
+  {
+    id: "f4",
+    username: "ibrahimfaqih_1014",
+    body: "Recommended banget buat yg mau joki Di sini, adminnya ramah dan oke banget nanggapin pertanyaannya",
+  },
+  {
+    id: "f5",
+    username: "gathanologyy",
+    body: "Big respect buat kakak yang joki nya! first time nyari store dan puji tuhan dapat yang bagus 👌. worth to try dan gabakal nyesel",
+  },
+];
+
+export default async function TestimoniPage() {
+  const { data } = await db
+    .from("testimonials")
+    .select("id, username, body")
+    .eq("is_active", true)
+    .order("sort")
+    .order("created_at");
+
+  const list: Testi[] = data && data.length > 0 ? data : FALLBACK;
 
   return (
-    <AdminShell active="testimoni">
-      <PageHeader title="Testimoni" desc="Tampil di halaman /testimoni. Minta izin pemilik komentar sebelum memuatnya." />
-
-      <details className={`${panel} group mt-4`}>
-        <summary className="flex cursor-pointer list-none items-center gap-2 px-4 py-3 text-sm font-semibold [&::-webkit-details-marker]:hidden">
-          <Icon name="plus" className="h-4 w-4" />Tambah testimoni
-          <Icon name="chevron" className="ml-auto h-4 w-4 text-gray-400 transition-transform group-open:rotate-180" />
-        </summary>
-        <SaveForm action={addTestimonial} resetOnOk className="grid gap-4 border-t border-gray-200 p-4 sm:grid-cols-2">
-          {fields()}
-          <TestiPreview />
-          <div className="col-span-full"><Submit>Tambah</Submit></div>
-        </SaveForm>
-      </details>
-
-      <div className="mt-4 flex items-baseline justify-between">
-        <h2 className="text-sm font-semibold text-gray-500">Daftar testimoni</h2>
-        <span className="text-xs text-gray-400">{list.length} komentar</span>
+    <main className="mx-auto max-w-7xl px-4 py-10 sm:px-5 sm:py-14">
+      <div className="mx-auto max-w-2xl text-center">
+        <h1 className="text-3xl font-extrabold text-[#0d0c22] sm:text-4xl">Testimoni</h1>
+        <p className="mt-2 text-sm text-gray-500 sm:text-base">
+          Kata mereka yang sudah order di Mygvstore.
+        </p>
       </div>
 
-      {list.length > 0 ? (
-        <div className={`${panel} mt-2 divide-y divide-gray-100 overflow-hidden`}>
-          {list.map((t) => (
-            <div key={t.id} className="p-4 sm:p-5">
-              <SaveForm action={saveTestimonial} className="grid gap-4 sm:grid-cols-2">
-                <input type="hidden" name="id" value={t.id} />
-                {fields(t)}
-                <TestiPreview />
-                <div className="col-span-full"><Submit>Simpan</Submit></div>
-              </SaveForm>
-              <SaveForm action={deleteTestimonial} className="mt-4 border-t border-gray-100 pt-4">
-                <input type="hidden" name="id" value={t.id} />
-                <DeleteButton confirmText="Hapus testimoni ini?">Hapus</DeleteButton>
-              </SaveForm>
+      <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {list.map((t) => (
+          <li
+            key={t.id}
+            className="flex flex-col rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition hover:shadow-md"
+          >
+            <p className="flex-1 whitespace-pre-line text-sm leading-relaxed text-gray-700">
+              “{t.body}”
+            </p>
+            <div className="mt-4 flex items-center gap-3 border-t border-gray-100 pt-4">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-pink-400 to-pink-600 text-sm font-extrabold uppercase text-white">
+                {t.username.charAt(0)}
+              </span>
+              <b className="truncate text-sm text-[#0d0c22]">@{t.username}</b>
             </div>
-          ))}
-        </div>
-      ) : (
-        <p className="mt-2 text-sm text-gray-500">Belum ada data. Selama kosong, halaman memakai 5 komentar bawaan dari kode.</p>
-      )}
-    </AdminShell>
+          </li>
+        ))}
+      </ul>
+
+      <section className="mt-14">
+        <h2 className="mb-4 text-center text-lg font-bold text-[#0d0c22]">Dari Instagram kami</h2>
+        <InstagramEmbed url={IG_POST} />
+      </section>
+
+      <div className="mt-12 text-center">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 rounded-full bg-[#0d0c22] px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+        >
+          Lihat layanan
+          <Icon name="right" className="h-4 w-4" />
+        </Link>
+      </div>
+    </main>
   );
 }

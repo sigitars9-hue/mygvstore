@@ -1,4 +1,5 @@
 "use client";
+import Script from "next/script";
 import { useEffect } from "react";
 
 declare global {
@@ -7,55 +8,39 @@ declare global {
   }
 }
 
-const POST = "https://www.instagram.com/p/C0s1Dgbx52i/";
-const SRC = "https://www.instagram.com/embed.js";
-
-export default function InstagramEmbed() {
+export default function InstagramEmbed({ url }: { url: string }) {
+  // Kalau script sudah termuat (misal pindah halaman lalu balik), render ulang embed
   useEffect(() => {
-    const run = () => window.instgrm?.Embeds.process();
-    if (window.instgrm) {
-      run();
-      return;
-    }
-    let s = document.querySelector<HTMLScriptElement>(`script[src="${SRC}"]`);
-    if (!s) {
-      s = document.createElement("script");
-      s.src = SRC;
-      s.async = true;
-      document.body.appendChild(s);
-    }
-    s.addEventListener("load", run);
-    return () => s?.removeEventListener("load", run);
-  }, []);
+    window.instgrm?.Embeds.process();
+  }, [url]);
 
   return (
-    <div className="w-full max-w-[540px]">
+    <div className="mx-auto flex w-full max-w-[540px] justify-center">
       <blockquote
         className="instagram-media"
-        data-instgrm-captioned
-        data-instgrm-permalink={`${POST}?utm_source=ig_embed&utm_campaign=loading`}
+        data-instgrm-permalink={url}
         data-instgrm-version="14"
         style={{
-          background: "#FFF",
+          background: "#fff",
           border: 0,
-          borderRadius: 12,
+          borderRadius: 3,
           boxShadow: "0 0 1px 0 rgba(0,0,0,0.5), 0 1px 10px 0 rgba(0,0,0,0.15)",
           margin: 1,
           maxWidth: 540,
-          minWidth: 280,
+          minWidth: 326,
           padding: 0,
           width: "calc(100% - 2px)",
         }}
       >
-        <a
-          href={POST}
-          target="_blank"
-          rel="noreferrer"
-          className="block p-6 text-center text-sm font-semibold text-blue-500"
-        >
+        <a href={url} target="_blank" rel="noreferrer" className="block p-4 text-center text-sm font-semibold text-[#3897f0]">
           Lihat postingan di Instagram
         </a>
       </blockquote>
+      <Script
+        src="https://www.instagram.com/embed.js"
+        strategy="lazyOnload"
+        onLoad={() => window.instgrm?.Embeds.process()}
+      />
     </div>
   );
 }

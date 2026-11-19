@@ -90,72 +90,70 @@ export default function Header({ games, cs }: { games: NavGame[]; cs: CsEntry[] 
         </nav>
 <div className="ml-auto flex items-center gap-1">
   <ThemeToggle />
-        {/* Chat CS */}
-        <div ref={chatRef} className="relative ml-auto">
-<button
-  type="button"
-  aria-label="Chat CS"
-  aria-expanded={chat}
-  onClick={() => { setChat(!chat); setOpen(false); }}
-  className="flex h-10 w-10 items-center justify-center transition hover:scale-110"
->
-  <Image
-    src="/icon/wa.png"
-    alt=""
-    width={32}
-    height={32}
-    className="h-8 w-8"
-  />
-</button>
-</div>
-          <div
-            className={`absolute right-0 top-full z-40 mt-2 w-[min(20rem,calc(100vw-2rem))] origin-top-right rounded-2xl border border-gray-100 bg-white shadow-2xl transition duration-200 ${
-              chat ? "visible translate-y-0 opacity-100" : "invisible -translate-y-1 opacity-0"
-            }`}
-          >
-            <div className="border-b border-gray-100 px-4 py-3">
-              <p className="text-sm font-bold text-[#0d0c22]">Chat CS</p>
-              <p className="text-xs text-gray-500">Pilih CS sesuai game yang kamu mau.</p>
-            </div>
 
-            <ul className="max-h-[60vh] overflow-y-auto overscroll-contain p-2">
-              {cs.map((c) => (
-                <li key={c.wa}>
-                  <a
-                    href={wa(c.wa, c.name)}
-                    target="_blank"
-                    rel="noreferrer"
-                    onClick={() => setChat(false)}
-                    className="flex items-center gap-3 rounded-xl p-2.5 hover:bg-gray-50"
-                  >
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-pink-400 to-pink-600 text-sm font-extrabold uppercase text-white">
-                      {c.name.charAt(0)}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <b className="block text-sm text-[#0d0c22]">{c.name}</b>
-                      <span className="block truncate text-xs text-gray-500">{c.games.join(", ")}</span>
-                    </span>
-                    <Icon name="right" className="h-4 w-4 shrink-0 text-gray-300" />
-                  </a>
-                </li>
-              ))}
-              {!cs.length && <li className="p-3 text-sm text-gray-500">Belum ada CS terdaftar.</li>}
-            </ul>
+  {/* Chat CS */}
+  <div ref={chatRef} className="relative">
+    <button
+      type="button"
+      aria-label="Chat CS"
+      aria-expanded={chat}
+      onClick={() => { setChat((v) => !v); setOpen(false); }}
+      className="flex h-10 w-10 items-center justify-center transition hover:scale-110"
+    >
+      <Image src="/icon/wa.png" alt="" width={32} height={32} className="h-8 w-8" />
+    </button>
 
-            <div className="border-t border-gray-100 p-2">
-              <a
-                href={WA}
-                target="_blank"
-                rel="noreferrer"
-                onClick={() => setChat(false)}
-                className="flex items-center justify-center gap-2 rounded-xl bg-gray-100 py-2.5 text-sm font-semibold text-[#0d0c22] hover:bg-gray-200"
-              >
-                <Icon name="chat" className="h-4 w-4" />Admin umum
-              </a>
-            </div>
-          </div>
-        </div>
+    {/* Popup sekarang DI DALAM chatRef */}
+    <div
+      inert={!chat}
+      className={`absolute right-0 top-full z-40 mt-2 w-[min(20rem,calc(100vw-2rem))] origin-top-right rounded-2xl border border-gray-100 bg-white shadow-2xl transition duration-200 ${
+        chat ? "visible translate-y-0 opacity-100" : "invisible -translate-y-1 opacity-0"
+      }`}
+    >
+      <div className="border-b border-gray-100 px-4 py-3">
+        <p className="text-sm font-bold text-[#0d0c22]">Chat CS</p>
+        <p className="text-xs text-gray-500">Pilih CS sesuai game yang kamu mau.</p>
       </div>
+
+      <ul className="max-h-[60vh] overflow-y-auto overscroll-contain p-2">
+        {cs.map((c) => (
+          <li key={c.wa}>
+            <a
+              href={wa(c.wa, c.name)}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => setChat(false)}
+              className="flex items-center gap-3 rounded-xl p-2.5 hover:bg-gray-50"
+            >
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-pink-400 to-pink-600 text-sm font-extrabold uppercase text-white">
+                {c.name.charAt(0)}
+              </span>
+              <span className="min-w-0 flex-1">
+                <b className="block text-sm text-[#0d0c22]">{c.name}</b>
+                <span className="block truncate text-xs text-gray-500">{c.games.join(", ")}</span>
+              </span>
+              <Icon name="right" className="h-4 w-4 shrink-0 text-gray-300" />
+            </a>
+          </li>
+        ))}
+        {!cs.length && <li className="p-3 text-sm text-gray-500">Belum ada CS terdaftar.</li>}
+      </ul>
+
+      <div className="border-t border-gray-100 p-2">
+        <a
+          href={WA}
+          target="_blank"
+          rel="noreferrer"
+          onClick={() => setChat(false)}
+          className="flex items-center justify-center gap-2 rounded-xl bg-gray-100 py-2.5 text-sm font-semibold text-[#0d0c22] hover:bg-gray-200"
+        >
+          <Icon name="chat" className="h-4 w-4" />Admin umum
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
 
       {/* Menu HP */}
       <div
