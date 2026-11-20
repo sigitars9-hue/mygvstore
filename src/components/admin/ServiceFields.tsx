@@ -45,7 +45,11 @@ export default function ServiceFields({
         <label className={lbl}>Urutan (angka kecil tampil duluan)</label>
         <input name="sort" type="number" defaultValue={s?.sort ?? 0} className={inp} />
       </div>
-
+      <div>
+        <label className={lbl}>Batas pembelian maksimal (kosong = tanpa batas)</label>
+        <input name="max_qty" type="number" min={1} max={99} step={1} inputMode="numeric"
+          defaultValue={s?.max_qty ?? ""} placeholder="mis. 5" className={inp} />
+      </div>
       <div>
         <label className={lbl}>Satuan</label>
         <input name="unit" defaultValue={s?.unit ?? "per paket"} className={inp} />

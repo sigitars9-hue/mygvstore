@@ -240,6 +240,10 @@ function serviceFields(fd: FormData) {
   if (original !== null && (!Number.isFinite(original) || original <= price))
     return { error: "Harga normal harus lebih besar dari harga promo" } as const;
   if (!str(fd, "joki_id")) return { error: "Pilih joki" } as const;
+    const rawMax = str(fd, "max_qty");
+  const maxQty = rawMax ? Math.round(Number(rawMax)) : null;
+  if (maxQty !== null && (!Number.isFinite(maxQty) || maxQty < 1 || maxQty > 99))
+    return { error: "Batas pembelian harus antara 1 dan 99" } as const;
   if (!urlOk(image)) return { error: "URL gambar tidak valid" } as const;
 
   const labels = fd.getAll("opt_label").map(String);
@@ -271,12 +275,14 @@ function serviceFields(fd: FormData) {
       unit: str(fd, "unit") || "per paket",
       duration: str(fd, "duration") || null,
       joki_id: str(fd, "joki_id"),
+      
             sub_category: str(fd, "sub_category") || null,
       category: str(fd, "category") || null,
             sort: Math.round(Number(fd.get("sort"))) || 0,
       includes: lines(fd.get("includes")),
       is_active: fd.get("is_active") === "on",
       original_price: original,
+       max_qty: maxQty,
     },
   } as const;
 }

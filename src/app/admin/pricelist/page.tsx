@@ -249,11 +249,22 @@ export default async function AdminPricelist({ searchParams }: { searchParams: P
                     )}
                     <div className="divide-y divide-gray-100">
                       {list.map((s, idx) => (
-                        <div
-                          key={s.id}
-                          data-svc={[s.name, s.sub_category, s.unit, s.price, s.description, hasPromo(s) ? "promo diskon" : ""].filter(Boolean).join(" ").toLowerCase()}
-                          className="flex items-start gap-1 pl-2 pr-4 sm:pl-3 sm:pr-5 [&[hidden]]:hidden"
-                        >
+                       <div
+  key={s.id}
+  data-svc={[
+    s.name,
+    s.sub_category,
+    s.unit,
+    s.price,
+    s.description,
+    s.max_qty != null ? `maks ${s.max_qty}` : "",
+    hasPromo(s) ? "promo diskon" : "",
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase()}
+  className="flex items-start gap-1 pl-2 pr-4 sm:pl-3 sm:pr-5 [&[hidden]]:hidden"
+>
                           {/* Pindah urutan */}
                           <div className="flex shrink-0 flex-col pt-2.5">
                             {(["up", "down"] as const).map((dir) => (
@@ -282,6 +293,7 @@ export default async function AdminPricelist({ searchParams }: { searchParams: P
                                 <p className="truncate text-xs text-gray-500">
                                   {jokiName[s.joki_id] ?? "-"} · {s.duration || "-"} · {s.unit}
                                   {(s.options ?? []).length > 0 && ` · ${s.options.length} pilihan`}
+{s.max_qty != null && ` · maks ${s.max_qty}`}
                                 </p>
                               </div>
                               {!s.is_active && (

@@ -26,7 +26,8 @@ export default function ServiceRow({
 
   const opts: ServiceOption[] = s.options ?? [];
   const img = s.image_url || gameIcon || null;
-  const total = s.price * qty;
+  const total = s.price * qty;   
+  const limit = Math.min(99, s.max_qty ?? 99);
   const promo = hasPromo(s);
   const pct = discountPct(s);
   const close = () => ref.current?.close();
@@ -42,10 +43,19 @@ export default function ServiceRow({
     if (added) return;
     const p = picks();
     if (!p) return;
-    add({
-      serviceId: s.id, name: s.name, unit: s.unit, price: s.price, qty,
-      game, gameSlug, cs: cs ?? null, csName: csName ?? null, picks: p,
-    });
+add({
+  serviceId: s.id,
+  name: s.name,
+  unit: s.unit,
+  price: s.price,
+  qty,
+  maxQty: s.max_qty ?? null,
+  game,
+  gameSlug,
+  cs: cs ?? null,
+  csName: csName ?? null,
+  picks: p,
+});
     setAdded(true);
     timer.current = setTimeout(() => {
       setQty(1); setSel({}); setErr(""); setAdded(false);
@@ -160,14 +170,16 @@ export default function ServiceRow({
             ))}
 
             <div className="flex items-center justify-between border-t border-gray-100 pt-4">
-              <span className="font-semibold text-[#0d0c22]">Jumlah</span>
+              <span className="font-semibold text-[#0d0c22]"> Jumlah
+  {s.max_qty != null && <span className="ml-2 text-xs font-normal text-gray-500">(maks. {s.max_qty})</span>}
+</span>
               <div className="flex items-center overflow-hidden rounded-xl border border-gray-200">
                 <button type="button" aria-label="Kurangi" disabled={qty <= 1} onClick={() => setQty(qty - 1)}
                   className="flex h-10 w-10 items-center justify-center transition hover:bg-gray-50 active:scale-90 disabled:text-gray-300">
                   <Icon name="minus" className="h-4 w-4" />
                 </button>
                 <span key={qty} className="animate-bump w-12 text-center font-bold text-pink-600">{qty}</span>
-                <button type="button" aria-label="Tambah" disabled={qty >= 99} onClick={() => setQty(qty + 1)}
+                <button type="button" aria-label="Tambah" disabled={qty >= limit} onClick={() => setQty(qty + 1)}
                   className="flex h-10 w-10 items-center justify-center transition hover:bg-gray-50 active:scale-90 disabled:text-gray-300">
                   <Icon name="plus" className="h-4 w-4" />
                 </button>

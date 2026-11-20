@@ -109,34 +109,46 @@ export default function CartBar() {
                   </div>
 
                   <ul className="divide-y divide-gray-100">
-                    {items.map((l) => (
-                      <li key={l.key} className="p-4">
-                        <div className="flex items-start gap-3">
-                          <div className="min-w-0 flex-1">
-                            <p className="font-semibold leading-snug">{l.name}</p>
-                            {l.picks.map((p) => (
-                              <p key={p.label} className="mt-0.5 break-words text-xs text-gray-500">{p.label}: {p.value}</p>
-                            ))}
-                            <p className="mt-1 text-xs text-gray-500">{rp(l.price)} {l.unit}</p>
-                          </div>
-                          <button type="button" aria-label="Hapus" onClick={() => remove(l.key)} className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-red-600">
-                            <Icon name="trash" className="h-4 w-4" />
-                          </button>
-                        </div>
-                        <div className="mt-2 flex items-center justify-between">
-                          <div className="flex items-center overflow-hidden rounded-xl border border-gray-200">
-                            <button type="button" aria-label="Kurangi" disabled={l.qty <= 1} onClick={() => setQty(l.key, l.qty - 1)} className="flex h-9 w-9 items-center justify-center hover:bg-gray-50 disabled:text-gray-300">
-                              <Icon name="minus" className="h-4 w-4" />
-                            </button>
-                            <span className="w-10 text-center text-sm font-bold text-pink-600">{l.qty}</span>
-                            <button type="button" aria-label="Tambah" onClick={() => setQty(l.key, l.qty + 1)} className="flex h-9 w-9 items-center justify-center hover:bg-gray-50">
-                              <Icon name="plus" className="h-4 w-4" />
-                            </button>
-                          </div>
-                          <b>{rp(l.qty * l.price)}</b>
-                        </div>
-                      </li>
-                    ))}
+                   {items.map((l) => {
+  const lineMax = Math.max(1, Math.min(99, l.maxQty ?? 99));
+  return (
+    <li key={l.key} className="p-4">
+      <div className="flex items-start gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold leading-snug">{l.name}</p>
+          {l.picks.map((p) => (
+            <p key={p.label} className="mt-0.5 break-words text-xs text-gray-500">{p.label}: {p.value}</p>
+          ))}
+          <p className="mt-1 text-xs text-gray-500">{rp(l.price)} {l.unit}</p>
+          {l.maxQty != null && (
+            <p className="mt-0.5 text-[11px] text-gray-400">Maks. {l.maxQty} {l.unit}</p>
+          )}
+        </div>
+        <button type="button" aria-label="Hapus" onClick={() => remove(l.key)} className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-red-600">
+          <Icon name="trash" className="h-4 w-4" />
+        </button>
+      </div>
+      <div className="mt-2 flex items-center justify-between">
+        <div className="flex items-center overflow-hidden rounded-xl border border-gray-200">
+          <button type="button" aria-label="Kurangi" disabled={l.qty <= 1} onClick={() => setQty(l.key, l.qty - 1)} className="flex h-9 w-9 items-center justify-center hover:bg-gray-50 disabled:text-gray-300">
+            <Icon name="minus" className="h-4 w-4" />
+          </button>
+          <span className="w-10 text-center text-sm font-bold text-pink-600">{l.qty}</span>
+          <button
+            type="button"
+            aria-label="Tambah"
+            disabled={l.qty >= lineMax}
+            onClick={() => setQty(l.key, l.qty + 1)}
+            className="flex h-9 w-9 items-center justify-center hover:bg-gray-50 disabled:text-gray-300"
+          >
+            <Icon name="plus" className="h-4 w-4" />
+          </button>
+        </div>
+        <b>{rp(l.qty * l.price)}</b>
+      </div>
+    </li>
+  );
+})}
                   </ul>
 
                   <div className="border-t border-gray-100 p-4">

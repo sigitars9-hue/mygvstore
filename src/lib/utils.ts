@@ -21,6 +21,7 @@ export type Service = {
   sub_category?: string | null;
   original_price?: number | null;
     sort?: number | null;
+    max_qty?: number | null;
 };
 
 export const hasPromo = (s: { price: number; original_price?: number | null }) =>
