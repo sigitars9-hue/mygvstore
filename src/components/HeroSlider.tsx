@@ -2,7 +2,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Icon } from "@/components/Icons";
 import type { Slide } from "@/lib/banners";
 
 const DUR = 500; // ms, samakan dengan duration-500 di bawah
@@ -64,15 +63,12 @@ export default function HeroSlider({ slides, interval = 4500 }: { slides: Slide[
     }
   };
 
-  const arrow =
-    "absolute top-[45%] z-10 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 opacity-0 shadow-lg transition group-hover:opacity-100 hover:scale-105 sm:flex";
-
   const fade =
     "[-webkit-mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)] [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]";
 
   return (
     <div
-      className="group relative"
+      className="relative"
       onPointerEnter={(e) => { if (e.pointerType === "mouse") paused.current = true; }}
       onPointerLeave={(e) => { if (e.pointerType === "mouse") paused.current = false; }}
     >
@@ -87,35 +83,28 @@ export default function HeroSlider({ slides, interval = 4500 }: { slides: Slide[
           className={`flex ${anim ? "transition-transform duration-500 ease-out motion-reduce:transition-none" : ""}`}
           style={{ transform: `translateX(${(100 - W) / 2 - pos * W}%)` }}
         >
-{items.map((s, i) => {
-  const active = (n > 1 ? (i - 1 + n) % n : 0) === idx;
-  return (
-    <div key={`${s.src}-${i}`} className="shrink-0 px-1.5" style={{ width: `${W}%` }}>
-      <Link
-        href={s.href}
-        draggable={false}
-        className={`relative block aspect-[1376/768] w-full overflow-hidden rounded-2xl bg-gray-100 ${
-          anim ? "transition-all duration-500 motion-reduce:transition-none" : ""
-        } ${active ? "scale-100 opacity-100 shadow-lg" : "scale-90 opacity-40"}`}
-      >
-        <Image
-          src={s.src} alt={s.alt} fill quality={80} priority={i <= 1}
-          draggable={false}
-          sizes="(min-width: 1024px) 440px, 80vw" className="object-cover"
-        />
-      </Link>
-    </div>
-  );
-})}
+          {items.map((s, i) => {
+            const active = (n > 1 ? (i - 1 + n) % n : 0) === idx;
+            return (
+              <div key={`${s.src}-${i}`} className="shrink-0 px-1.5" style={{ width: `${W}%` }}>
+                <Link
+                  href={s.href}
+                  draggable={false}
+                  className={`relative block aspect-[1376/768] w-full overflow-hidden rounded-2xl bg-gray-100 ${
+                    anim ? "transition-all duration-500 motion-reduce:transition-none" : ""
+                  } ${active ? "scale-100 opacity-100 shadow-lg" : "scale-90 opacity-40"}`}
+                >
+                  <Image
+                    src={s.src} alt={s.alt} fill quality={80} priority={i <= 1}
+                    draggable={false}
+                    sizes="(min-width: 1024px) 440px, 80vw" className="object-cover"
+                  />
+                </Link>
+              </div>
+            );
+          })}
         </div>
       </div>
-
-      {n > 1 && (
-        <>
-          <button aria-label="Banner sebelumnya" onClick={prev} className={`${arrow} left-1`}><Icon name="left" /></button>
-          <button aria-label="Banner berikutnya" onClick={next} className={`${arrow} right-1`}><Icon name="right" /></button>
-        </>
-      )}
     </div>
   );
 }

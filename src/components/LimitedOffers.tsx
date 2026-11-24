@@ -136,7 +136,7 @@ export default function LimitedOffers({ offers }: { offers: Offer[] }) {
   return (
     <section className="mt-8" aria-label="Limited offers">
       <div className="mb-3 flex items-center gap-2">
-        <h2 className="text-lg font-bold sm:text-xl">Limited Offers</h2>
+        <h2 className="text-lg font-bold text-gray-900 sm:text-xl dark:text-white">Limited Offers</h2>
         <span className="rounded bg-red-600 px-2.5 py-1 text-[11px] font-bold uppercase tabular-nums tracking-wide text-white">
           {soonest && now ? `Berakhir ${fmt(soonest - now)}` : "Terbatas"}
         </span>
@@ -166,7 +166,7 @@ export default function LimitedOffers({ offers }: { offers: Offer[] }) {
               : [];
 
             const card = (
-              <div className="group flex w-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] transition duration-300 hover:-translate-y-1 hover:border-pink-500/50 hover:bg-white/[0.07]">
+              <div className="group flex w-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white transition duration-300 hover:-translate-y-1 hover:border-pink-500/50 hover:shadow-md dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.07] dark:hover:shadow-none">
                 {/* Gambar 4:5 tanpa overlay */}
                 <div className="relative aspect-[4/5] w-full bg-gray-200">
                   <Image
@@ -184,7 +184,7 @@ export default function LimitedOffers({ offers }: { offers: Offer[] }) {
                 {(o.label || t) && (
                   <div className="flex flex-1 flex-col gap-2.5 p-2.5 sm:p-3">
                     {o.label && (
-                      <p className="line-clamp-2 text-[13px] font-semibold leading-snug text-white sm:text-sm">
+                      <p className="line-clamp-2 text-[13px] font-semibold leading-snug text-gray-900 sm:text-sm dark:text-white">
                         {o.label}
                       </p>
                     )}
@@ -193,7 +193,9 @@ export default function LimitedOffers({ offers }: { offers: Offer[] }) {
                       <div className="mt-auto">
                         <p
                           className={`mb-1.5 text-[10px] font-bold uppercase tracking-wider ${
-                            urgent ? "text-pink-400" : "text-white/50"
+                            urgent
+                              ? "text-pink-500 dark:text-pink-400"
+                              : "text-gray-500 dark:text-white/50"
                           }`}
                         >
                           Berakhir dalam
@@ -208,7 +210,7 @@ export default function LimitedOffers({ offers }: { offers: Offer[] }) {
                               className={`rounded-lg py-1 text-center ${
                                 urgent
                                   ? "bg-gradient-to-b from-red-500 to-pink-500 text-white"
-                                  : "bg-white/10 text-white"
+                                  : "bg-gray-100 text-gray-900 dark:bg-white/10 dark:text-white"
                               }`}
                             >
                               <div className="text-sm font-extrabold leading-none tabular-nums sm:text-base">
