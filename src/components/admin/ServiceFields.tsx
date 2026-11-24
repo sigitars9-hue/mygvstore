@@ -1,16 +1,20 @@
 import ImageUpload from "@/components/admin/ImageUpload";
 import { inp, lbl } from "@/components/admin/ui";
 import PriceFields from "@/components/admin/PriceFields";
+import OptionFields from "@/components/admin/OptionFields";
+import FormDraft from "@/components/admin/FormDraft";
 
 export default function ServiceFields({
   s, jokis, subs = [], cats = [],
 }: { s?: any; jokis: { id: string; name: string }[]; subs?: string[]; cats?: string[] }) {
-  const rows: any[] = [...(s?.options ?? []), {}];
   const listId = `sub-cats-${s?.id ?? "new"}`;
   const catListId = `svc-cats-${s?.id ?? "new"}`;
 
   return (
     <>
+      {/* Autosave draft ke localStorage; hilang otomatis setelah berhasil disimpan */}
+      <FormDraft serverSig={JSON.stringify(s ?? null)} />
+
       <div className="sm:col-span-2">
         <label className={lbl}>Gambar layanan (opsional, kosong = ikon game)</label>
         <ImageUpload name="image_url" folder="layanan" shape="thumb" defaultValue={s?.image_url ?? ""} />
@@ -68,34 +72,9 @@ export default function ServiceFields({
         <textarea name="includes" rows={3} defaultValue={(s?.includes ?? []).join("\n")} className={inp} />
       </div>
 
-      {/* Pilihan tambahan: daftar berpemisah garis, tanpa kotak per baris */}
-      <div className="border-t border-gray-100 pt-4 sm:col-span-2">
-        <p className="text-sm font-semibold text-[#0d0c22]">Pilihan tambahan untuk pelanggan</p>
-        <p className="mt-0.5 text-xs text-gray-500">
-          Tipe <b>Pilihan</b>: isi opsi dipisah koma (mis. Rate on, Rate off). Tipe <b>Teks</b>: pelanggan mengetik sendiri, kolom terakhir jadi contoh isian. Kosongkan label untuk menghapus.
-        </p>
-        <div className="mt-2 divide-y divide-gray-100">
-          {rows.map((o, i) => (
-            <div key={`${o.label ?? ""}-${i}`} className="grid grid-cols-2 gap-2 py-3 sm:grid-cols-[1fr_8rem_7rem]">
-              <input name="opt_label" defaultValue={o.label ?? ""} placeholder="Label, mis. Status akun" className={`${inp} col-span-2 sm:col-span-1`} />
-              <select name="opt_type" defaultValue={o.type ?? "choice"} className={inp}>
-                <option value="choice">Pilihan</option>
-                <option value="text">Teks</option>
-              </select>
-              <select name="opt_req" defaultValue={o.required === false ? "0" : "1"} className={inp}>
-                <option value="1">Wajib</option>
-                <option value="0">Opsional</option>
-              </select>
-              <input
-                name="opt_extra"
-                defaultValue={o.type === "text" ? o.hint ?? "" : (o.choices ?? []).join(", ")}
-                placeholder="Opsi dipisah koma / contoh isian"
-                className={`${inp} col-span-2 sm:col-span-3`}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Pilihan tambahan: baris baru hanya muncul lewat tombol "Tambah pilihan".
+          key ikut isi opsi tersimpan, jadi komponen dimuat ulang setelah disimpan. */}
+      <OptionFields key={JSON.stringify(s?.options ?? [])} options={s?.options ?? []} />
 
       <label className="flex items-center gap-2 text-sm font-medium sm:col-span-2">
         <input type="checkbox" name="is_active" defaultChecked={s ? s.is_active : true} className="h-4 w-4 accent-black" />

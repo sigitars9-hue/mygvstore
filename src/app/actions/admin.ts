@@ -442,7 +442,28 @@ export async function addService(fd: FormData): Promise<R> {
   publish();
   return { ok: true };
 }
+export async function duplicateService(fd: FormData): Promise<R> {
+  await requireAdmin();
+  const { data: src } = await db.from("services").select("*").eq("id", str(fd, "id")).single();
+  if (!src) return { error: "Layanan tidak ditemukan" };
 
+  // buang kolom yang dibuat otomatis oleh database
+  const { id: _id, created_at: _c, updated_at: _u, ...rest } = src;
+
+  // slug lama berakhiran 4 karakter acak, ganti dengan yang baru
+  const base = String(src.slug ?? "").replace(/-[a-z0-9]{4}$/, "") || slugify(src.name);
+
+  const { error } = await db.from("services").insert({
+    ...rest,
+    name: `${src.name} (salinan)`,
+    slug: `${base}-${crypto.randomUUID().slice(0, 4)}`,
+    sort: (src.sort ?? 0) + 1, // tepat di bawah layanan asli
+  });
+  if (error) return { error: error.message };
+
+  publish();
+  return { ok: true };
+}
 export async function deleteService(fd: FormData): Promise<R> {
   await requireAdmin();
   const { error } = await db.from("services").delete().eq("id", str(fd, "id"));

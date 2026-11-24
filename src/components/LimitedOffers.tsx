@@ -6,6 +6,7 @@ import Link from "next/link";
 import type { Offer } from "@/lib/offers";
 
 const SPEED = 35; // px per detik
+const URGENT_MS = 86_400_000; // < 24 jam dianggap mendesak
 
 const fmt = (ms: number) => {
   const s = Math.max(0, Math.floor(ms / 1000));
@@ -13,6 +14,16 @@ const fmt = (ms: number) => {
   const p = (n: number) => String(n).padStart(2, "0");
   const t = `${p(Math.floor((s % 86400) / 3600))}:${p(Math.floor((s % 3600) / 60))}:${p(s % 60)}`;
   return d > 0 ? `${d} hari ${t}` : t;
+};
+
+const parts = (ms: number) => {
+  const s = Math.max(0, Math.floor(ms / 1000));
+  return {
+    d: Math.floor(s / 86400),
+    h: Math.floor((s % 86400) / 3600),
+    m: Math.floor((s % 3600) / 60),
+    s: s % 60,
+  };
 };
 
 export default function LimitedOffers({ offers }: { offers: Offer[] }) {
@@ -126,7 +137,7 @@ export default function LimitedOffers({ offers }: { offers: Offer[] }) {
     <section className="mt-8" aria-label="Limited offers">
       <div className="mb-3 flex items-center gap-2">
         <h2 className="text-lg font-bold sm:text-xl">Limited Offers</h2>
-        <span className="rounded-full bg-pink-500 px-2.5 py-0.5 text-[11px] font-bold uppercase tabular-nums tracking-wide text-white">
+        <span className="rounded bg-red-600 px-2.5 py-1 text-[11px] font-bold uppercase tabular-nums tracking-wide text-white">
           {soonest && now ? `Berakhir ${fmt(soonest - now)}` : "Terbatas"}
         </span>
       </div>
@@ -142,30 +153,77 @@ export default function LimitedOffers({ offers }: { offers: Offer[] }) {
       >
         {Array.from({ length: reps }).flatMap((_, r) =>
           visible.map((o, i) => {
-            const img = (
-              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-gray-200 transition duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-pink-500/20">
-                <Image
-                  src={o.image_url}
-                  alt={r === 0 ? o.alt || `Limited offer ${i + 1}` : ""}
-                  fill
-                  sizes="(min-width: 1024px) 240px, (min-width: 640px) 200px, 44vw"
-                  className="object-cover"
-                  draggable={false}
-                  priority={r === 0 && i < 3}
-                />
+            const left = o.ends_at && now !== null ? new Date(o.ends_at).getTime() - now : null;
+            const urgent = left !== null && left < URGENT_MS;
+            const t = left !== null ? parts(left) : null;
+            const segs = t
+              ? [
+                  ...(t.d > 0 ? [{ v: t.d, u: "hari" }] : []),
+                  { v: t.h, u: "jam" },
+                  { v: t.m, u: "mnt" },
+                  { v: t.s, u: "dtk" },
+                ]
+              : [];
 
-                {/* Label promo, mis. "Up to 50%" */}
-                {o.label && (
-                  <span className="absolute left-2 top-2 z-10 rounded-full bg-gradient-to-r from-red-500 to-pink-500 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wide text-white shadow-md sm:left-3 sm:top-3 sm:text-xs">
-                    {o.label}
-                  </span>
-                )}
+            const card = (
+              <div className="group flex w-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] transition duration-300 hover:-translate-y-1 hover:border-pink-500/50 hover:bg-white/[0.07]">
+                {/* Gambar 4:5 tanpa overlay */}
+                <div className="relative aspect-[4/5] w-full bg-gray-200">
+                  <Image
+                    src={o.image_url}
+                    alt={r === 0 ? o.alt || `Limited offer ${i + 1}` : ""}
+                    fill
+                    sizes="(min-width: 1024px) 240px, (min-width: 640px) 200px, 44vw"
+                    className="object-cover"
+                    draggable={false}
+                    priority={r === 0 && i < 3}
+                  />
+                </div>
 
-                {/* Hitung mundur per kartu */}
-                {o.ends_at && now !== null && (
-                  <span className="absolute inset-x-0 bottom-0 z-10 bg-black/60 px-2 py-1.5 text-center text-[11px] font-bold tabular-nums text-white backdrop-blur-sm sm:text-xs">
-                    Berakhir {fmt(new Date(o.ends_at).getTime() - now)}
-                  </span>
+                {/* Panel info */}
+                {(o.label || t) && (
+                  <div className="flex flex-1 flex-col gap-2.5 p-2.5 sm:p-3">
+                    {o.label && (
+                      <p className="line-clamp-2 text-[13px] font-semibold leading-snug text-white sm:text-sm">
+                        {o.label}
+                      </p>
+                    )}
+
+                    {t && (
+                      <div className="mt-auto">
+                        <p
+                          className={`mb-1.5 text-[10px] font-bold uppercase tracking-wider ${
+                            urgent ? "text-pink-400" : "text-white/50"
+                          }`}
+                        >
+                          Berakhir dalam
+                        </p>
+                        <div
+                          className="grid gap-1"
+                          style={{ gridTemplateColumns: `repeat(${segs.length}, minmax(0, 1fr))` }}
+                        >
+                          {segs.map((g) => (
+                            <div
+                              key={g.u}
+                              className={`rounded-lg py-1 text-center ${
+                                urgent
+                                  ? "bg-gradient-to-b from-red-500 to-pink-500 text-white"
+                                  : "bg-white/10 text-white"
+                              }`}
+                            >
+                              <div className="text-sm font-extrabold leading-none tabular-nums sm:text-base">
+                                {String(g.v).padStart(2, "0")}
+                              </div>
+                              <div className="mt-0.5 text-[9px] font-medium uppercase leading-none opacity-70">
+                                {g.u}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <span className="sr-only">Berakhir {fmt(left!)}</span>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             );
@@ -174,18 +232,19 @@ export default function LimitedOffers({ offers }: { offers: Offer[] }) {
               <div
                 key={`${r}-${o.id}`}
                 aria-hidden={r !== 0 || undefined}
-                className="w-[44%] shrink-0 sm:w-[200px] lg:w-[240px]"
+                className="flex w-[44%] shrink-0 sm:w-[200px] lg:w-[240px]"
               >
                 {o.href ? (
                   <Link
                     href={o.href}
+                    className="flex w-full"
                     target={o.href.startsWith("http") ? "_blank" : undefined}
                     tabIndex={r === 0 ? undefined : -1}
                   >
-                    {img}
+                    {card}
                   </Link>
                 ) : (
-                  img
+                  card
                 )}
               </div>
             );

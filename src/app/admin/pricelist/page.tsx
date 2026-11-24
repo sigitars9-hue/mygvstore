@@ -10,7 +10,7 @@ import ImageUpload from "@/components/admin/ImageUpload";
 import ListFilter from "@/components/admin/ListFilter";
 import {
   saveService, addService, deleteService, saveServiceCats, moveService,
-  renameServiceCategory, deleteServiceCategory,
+  renameServiceCategory, deleteServiceCategory, duplicateService,
 } from "@/app/actions/admin";
 import { lbl } from "@/components/admin/ui";
 import { PageHeader } from "@/components/admin/AdminKit";
@@ -326,6 +326,22 @@ export default async function AdminPricelist({ searchParams }: { searchParams: P
                               </SaveForm>
                             </div>
                           </details>
+                          {/* Duplikat cepat */}
+<SaveForm action={duplicateService} className="shrink-0 pt-2.5">
+  <input type="hidden" name="id" value={s.id} />
+  <button
+    type="submit"
+    title="Duplikat layanan"
+    aria-label="Duplikat layanan"
+    className={arrow}
+  >
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <rect x="9" y="9" width="11" height="11" rx="2" />
+      <path d="M5 15V6a2 2 0 0 1 2-2h9" />
+    </svg>
+  </button>
+</SaveForm>
                         </div>
                       ))}
                     </div>
@@ -333,6 +349,7 @@ export default async function AdminPricelist({ searchParams }: { searchParams: P
                 ))}
               </div>
             </details>
+            
           );
         })}
 
